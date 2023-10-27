@@ -2,17 +2,53 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 import sqlite3
 import openpyxl
 from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
-from handlers.scheduler_handler import send_email
+from handlers.scheduler_handler import send_emails
+from services import admin_login_service, admin_data_service
+import sqlite3
+
+
+# def delete_table(database, table_name):
+#     try:
+#         # Connect to the SQLite database
+#         conn = sqlite3.connect(database)
+#
+#         # Create a cursor object
+#         cursor = conn.cursor()
+#
+#         # SQL statement to delete the table
+#         sql = f'DROP TABLE IF EXISTS {table_name}'
+#
+#         # Execute the SQL statement
+#         cursor.execute(sql)
+#
+#         # Commit the changes and close the connection
+#         conn.commit()
+#         conn.close()
+#         print(f"Table '{table_name}' has been deleted successfully.")
+#     except sqlite3.Error as e:
+#         print(f"Error deleting table: {e}")
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#
+#
+# # Usage example:
+# # Replace 'your_database.db' with the path to your SQLite database file
+# # Replace 'your_table_name' with the name of the table you want to delete
+# delete_table('details.db', 'details')
 
 # app = Flask(__name__)
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'mysecretkey1234567890'
+
+app.register_blueprint(admin_login_service.admin_login_bp)
+app.register_blueprint(admin_data_service.admin_data_bp)
 
 
 # Database configuration
 DB_NAME = 'details.db'
 
 def create_tables():
+    print("lets create")
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS details (
@@ -36,8 +72,7 @@ def create_tables():
                 ltc_amount TEXT,           
                 maximum_monthly_benefit TEXT,  
                 rate TEXT,                
-                term TEXT,                
-                premium_schedule TEXT,     
+                term TEXT,                    
                 benefit_durations TEXT,    
                 inflation_benefit_option TEXT  
                 )''')
@@ -87,18 +122,23 @@ def index():
             return redirect(url_for('index'))
 
        # Save form data to the database
-
+       #  print("This is the database name",DB_NAME)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
+        # c.execute('''SELECT * ''')
+        print("check before this hero")
         c.execute('''INSERT INTO details (
                     first_name, middle_name, last_name, phone_number,
                     email_address, sex, age, date_of_birth, address,
-                    state, risk_class, face_amount, death_benefit_option, premium_mode, section, ltc_amount, maximum_monthly_benefit,
-                    rate, term, premium_schedule, benefit_durations, inflation_benefit_option
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                    state, risk_class, face_amount, death_benefit_option, premium_mode,
+                     section, ltc_amount, maximum_monthly_benefit,
+                    rate, term, premium_schedule, benefit_durations, 
+                    inflation_benefit_option
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (first_name, middle_name, last_name, phone_number,
                 email_address, sex, age, date_of_birth, address,
-                state, risk_class, face_amount, death_benefit_option, premium_mode, section, ltc_amount, maximum_monthly_benefit,
+                state, risk_class, face_amount, death_benefit_option, premium_mode,
+             section, ltc_amount, maximum_monthly_benefit,
                 rate, term, premium_schedule, benefit_durations, inflation_benefit_option))
         conn.commit()
         conn.close()
@@ -177,7 +217,7 @@ def schedule():
     if request.method == 'POST':
         data = request.json
         print(data)
-        send_email(data)
+        send_emails(data)
 
         return jsonify({'result': data})
 
