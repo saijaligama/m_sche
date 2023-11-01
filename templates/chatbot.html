@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Project Screen 1 - Basic Details</title>
+    <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: navy;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        /* styles.css */
+
+#chatbot {
+  width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.chatbot-msg {
+  background: #eee;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.user-msg {
+  background: #5897fb;
+  color: #fff;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Chatbot Form</h1>
+
+<!--  <div id="chatbot"></div>-->
+
+<!--  <div class="button-container">-->
+<!--    <button id="submit" class="submit-button">Submit</button>-->
+<!--  </div>-->
+
+<!--</div>-->
+
+<div id="chatbot">
+  <div id="questions"></div>
+
+  <div id="prompts"></div>
+      <div class="button-container">
+    <button id="submit" class="submit-button">Submit</button>
+  </div>
+</div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js"></script>
+
+    <script>
+function startChatbot() {
+  const questions = [
+    "What is your first name?",
+    "What is your last name?",
+    "What is your age?",
+    "What is your phone number?",
+    "What is your sex",
+    "What is your email address? ",
+    "What is your date of birth (YYYY-MM-DD)? ",
+    "What is your address? ",
+    "What state do you live in? ",
+    "What is your risk class? ",
+    "What is the desired face amount? ",
+    "What death benefit option (level/increasing)? ",
+    "What premium mode (monthly/annual)? ",
+    "What premium schedule (maximum/target)? "
+
+    // Add more questions as needed
+  ];
+
+  const responses = {};
+  let currentQuestion = 0;
+
+  function displayQuestions() {
+    $('#questions').empty(); // Clear previous content
+
+    for (let i = 0; i < currentQuestion; i++) {
+      $('#questions').append(`
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div>${questions[i]}</div>
+          <div>${responses[`q${i}`]}</div>
+        </div>
+      `);
+    }
+
+    if (currentQuestion < questions.length) {
+      $('#questions').append(`
+        <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f0f0f0; padding: 5px; margin-bottom: 10px;">
+          <div>${questions[currentQuestion]}</div>
+          <input type="text" id="q${currentQuestion}">
+          <button id="submit" class="submit-button">Submit</button>
+        </div>
+      `);
+
+      $('#submit').on('click', function() {
+        responses[`q${currentQuestion}`] = $(`#q${currentQuestion}`).val();
+        currentQuestion++;
+        displayQuestions();
+
+        if (currentQuestion === questions.length) {
+          // All questions answered, trigger API call
+          $.ajax({
+            url: '/chatbot',
+            data: JSON.stringify(responses),
+            type: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(response) {
+              if (response.redirect) {
+                window.location.href = response.redirect;
+              }
+              // Handle success
+            },
+            error: function(data2) {
+              console.log(data2);
+              // Handle error
+            }
+          });
+        }
+      });
+    }
+  }
+
+  // Initial display of the questions
+  displayQuestions();
+}
+
+// Run on page load
+$(document).ready(function() {
+  startChatbot();
+});
+
+</script>
+
+
+</body>
+</html>

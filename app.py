@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file
 import sqlite3
 import openpyxl
-from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from handlers.scheduler_handler import send_emails
 from services import admin_login_service, admin_data_service
+from services import chatbot_service
 import sqlite3
-
 
 # def delete_table(database, table_name):
 #     try:
@@ -42,10 +42,11 @@ app.secret_key = 'mysecretkey1234567890'
 
 app.register_blueprint(admin_login_service.admin_login_bp)
 app.register_blueprint(admin_data_service.admin_data_bp)
-
+app.register_blueprint(chatbot_service.chatbot_bp)
 
 # Database configuration
 DB_NAME = 'details.db'
+
 
 def create_tables():
     print("lets create")
@@ -79,8 +80,8 @@ def create_tables():
     conn.commit()
     conn.close()
 
-@app.route('/', methods=['GET', 'POST'])
 
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         # Retrieve form data
@@ -100,7 +101,6 @@ def index():
         premium_mode = request.form['premium_mode']
         premium_schedule = request.form['premium_schedule']
         section = request.form['section']
-        
 
         if section == 'ltc_rider':
             # Handle fields for LTC Rider section
@@ -121,8 +121,8 @@ def index():
             flash('Invalid section selected')
             return redirect(url_for('index'))
 
-       # Save form data to the database
-       #  print("This is the database name",DB_NAME)
+        # Save form data to the database
+        #  print("This is the database name",DB_NAME)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
         # c.execute('''SELECT * ''')
@@ -135,17 +135,18 @@ def index():
                     rate, term, premium_schedule, benefit_durations, 
                     inflation_benefit_option
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (first_name, middle_name, last_name, phone_number,
-                email_address, sex, age, date_of_birth, address,
-                state, risk_class, face_amount, death_benefit_option, premium_mode,
-             section, ltc_amount, maximum_monthly_benefit,
-                rate, term, premium_schedule, benefit_durations, inflation_benefit_option))
+                  (first_name, middle_name, last_name, phone_number,
+                   email_address, sex, age, date_of_birth, address,
+                   state, risk_class, face_amount, death_benefit_option, premium_mode,
+                   section, ltc_amount, maximum_monthly_benefit,
+                   rate, term, premium_schedule, benefit_durations, inflation_benefit_option))
         conn.commit()
         conn.close()
-    
+
         return redirect(url_for('export'))
 
     return render_template('index.html')
+
 
 @app.route('/export')
 def export():
@@ -160,13 +161,13 @@ def export():
     workbook = openpyxl.Workbook()
     sheet = workbook.active
 
-   # Write header row
+    # Write header row
     header = ['ID', 'First Name', 'Middle Name', 'Last Name', 'Phone Number',
-          'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
-          'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount', 'Maximum Monthly Benefit',
-          'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
+              'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
+              'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount',
+              'Maximum Monthly Benefit',
+              'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
     sheet.append(header)
-
 
     # Write data rows
     for row in rows:
@@ -177,6 +178,7 @@ def export():
     workbook.save(excel_file)
 
     return redirect(url_for('index'))
+
 
 @app.route('/download', methods=['GET'])
 def download():
@@ -193,9 +195,10 @@ def download():
 
     # Write header row
     header = ['ID', 'First Name', 'Middle Name', 'Last Name', 'Phone Number',
-          'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
-          'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount', 'Maximum Monthly Benefit',
-          'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
+              'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
+              'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount',
+              'Maximum Monthly Benefit',
+              'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
     sheet.append(header)
 
     # Write data rows
@@ -210,7 +213,7 @@ def download():
     return send_file(excel_file, as_attachment=True)
 
 
-@app.route('/schedule',methods = ["GET","POST"])
+@app.route('/schedule', methods=["GET", "POST"])
 def schedule():
     if request.method == 'GET':
         return render_template('scheduler.html')
@@ -221,6 +224,50 @@ def schedule():
 
         return jsonify({'result': data})
 
+
+import os
+
+
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    if request.method == 'GET':
+        return render_template('chatbot.html')
+    else:
+        try:
+            data = request.json
+            print("inside data")
+            print(data)
+            # DB_NAME = 'details.db'
+            #
+            # conn = sqlite3.connect(DB_NAME)
+
+            # Establish connection to the database
+            conn = sqlite3.connect('details.db')
+            c = conn.cursor()
+            print(conn)
+
+            # Insert data into the details table
+            c.execute('''INSERT INTO details (
+            		first_name, last_name, age,phone_number
+            		, sex,email_address, date_of_birth, address,
+            		state, risk_class, face_amount, death_benefit_option, premium_mode,
+            		 premium_schedule
+            	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
+                      (data['q0'], data['q1'], data['q2'], data['q3'],
+                       data['q4'], data['q5'], data['q6'], data['q7'],
+                       data['q8'], data['q9'], data['q10'],
+                       data['q11'], data['q12'], data['q13']))
+            conn.commit()
+            print("-------------------------------> ")
+            conn.close()
+            print("entered into database")
+            return jsonify({'message': 'Data written to SQLite database'})
+        except Exception as e:
+            print()
+            # Handle the exception, e.g., log the error or return an error response
+            return jsonify({'error': str(e)})
+
+
 if __name__ == '__main__':
     create_tables()
-    app.run(debug=False,port=8001)
+    app.run(debug=False, port=8001)
