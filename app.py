@@ -45,7 +45,7 @@ app.register_blueprint(admin_data_service.admin_data_bp)
 app.register_blueprint(chatbot_service.chatbot_bp)
 
 # Database configuration
-DB_NAME = 'details.db'
+DB_NAME = 'details2.db'
 
 
 def create_tables():
@@ -53,30 +53,58 @@ def create_tables():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS details (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                first_name TEXT,
-                middle_name TEXT,
-                last_name TEXT,
-                phone_number TEXT,
-                email_address TEXT,
-                sex TEXT,
-                age INTEGER,
-                date_of_birth TEXT,
-                address TEXT,
-                state TEXT,
-                risk_class TEXT,
-                face_amount TEXT,              
-                death_benefit_option TEXT,    
-                premium_mode TEXT,            
-                premium_schedule TEXT,         
-                section TEXT,              
-                ltc_amount TEXT,           
-                maximum_monthly_benefit TEXT,  
-                rate TEXT,                
-                term TEXT,                    
-                benefit_durations TEXT,    
-                inflation_benefit_option TEXT  
-                )''')
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    first_name TEXT,
+                    middle_name TEXT,
+                    last_name TEXT,
+                    phone_number TEXT,
+                    email_address TEXT,
+                    sex TEXT,
+                    age INTEGER,
+                    date_of_birth TEXT,
+                    address TEXT,
+                    state TEXT,
+                    risk_class TEXT,
+                    face_amount TEXT,              
+                    death_benefit_option TEXT,    
+                    premium_mode TEXT,            
+                    premium_schedule TEXT,         
+                    section TEXT,              
+                    ltc_amount TEXT,           
+                    maximum_monthly_benefit TEXT,  
+                    rate TEXT,                
+                    term TEXT,                    
+                    benefit_durations TEXT,    
+                    inflation_benefit_option TEXT,
+                    consultant TEXT,  
+                    location TEXT,    
+                    time TEXT         
+                    )''')
+    # c.execute('''CREATE TABLE IF NOT EXISTS details (
+    #             id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #             first_name TEXT,
+    #             middle_name TEXT,
+    #             last_name TEXT,
+    #             phone_number TEXT,
+    #             email_address TEXT,
+    #             sex TEXT,
+    #             age INTEGER,
+    #             date_of_birth TEXT,
+    #             address TEXT,
+    #             state TEXT,
+    #             risk_class TEXT,
+    #             face_amount TEXT,
+    #             death_benefit_option TEXT,
+    #             premium_mode TEXT,
+    #             premium_schedule TEXT,
+    #             section TEXT,
+    #             ltc_amount TEXT,
+    #             maximum_monthly_benefit TEXT,
+    #             rate TEXT,
+    #             term TEXT,
+    #             benefit_durations TEXT,
+    #             inflation_benefit_option TEXT
+    #             )''')
     conn.commit()
     conn.close()
 
@@ -220,10 +248,38 @@ def schedule():
     if request.method == 'POST':
         data = request.json
         print(data)
+        conn = sqlite3.connect(DB_NAME)
+        c = conn.cursor()
+        c.execute('''INSERT INTO details (consultant,
+        location,
+        time) 
+        VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
         send_emails(data)
 
         return jsonify({'result': data})
 
+
+@app.route('/get_details', methods=["GET", "POST"])
+def get_details():
+    if request.method == 'POST':
+        data = request.json
+        id = data['id']
+        conn = sqlite3.connect(DB_NAME)
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM table WHERE id=?", (id,))
+        result = c.fetchone()
+
+        conn.close()
+
+        if result:
+            return jsonify({
+                'result': result
+            })
+        else:
+            return jsonify({
+                'error': 'No matching ID'
+            })
 
 import os
 

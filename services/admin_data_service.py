@@ -11,7 +11,7 @@ def admin_data():
 
 @admin_data_bp.route('/get_data', methods=['GET'])
 def get_data():
-    conn = sqlite3.connect('details.db')
+    conn = sqlite3.connect('details2.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM details')
     data = cursor.fetchall()
