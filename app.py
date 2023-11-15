@@ -293,30 +293,30 @@ def chatbot():
             data = request.json
             print("inside data")
             print(data)
-            # DB_NAME = 'details.db'
+            # # DB_NAME = 'details.db'
+            # #
+            # # conn = sqlite3.connect(DB_NAME)
             #
-            # conn = sqlite3.connect(DB_NAME)
-
-            # Establish connection to the database
-            conn = sqlite3.connect('details.db')
-            c = conn.cursor()
-            print(conn)
-
-            # Insert data into the details table
-            c.execute('''INSERT INTO details (
-            		first_name, last_name, age,phone_number
-            		, sex,email_address, date_of_birth, address,
-            		state, risk_class, face_amount, death_benefit_option, premium_mode,
-            		 premium_schedule
-            	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
-                      (data['q0'], data['q1'], data['q2'], data['q3'],
-                       data['q4'], data['q5'], data['q6'], data['q7'],
-                       data['q8'], data['q9'], data['q10'],
-                       data['q11'], data['q12'], data['q13']))
-            conn.commit()
-            print("-------------------------------> ")
-            conn.close()
-            print("entered into database")
+            # # Establish connection to the database
+            # conn = sqlite3.connect('details.db')
+            # c = conn.cursor()
+            # print(conn)
+            #
+            # # Insert data into the details table
+            # c.execute('''INSERT INTO details (
+            # 		first_name, last_name, age,phone_number
+            # 		, sex,email_address, date_of_birth, address,
+            # 		state, risk_class, face_amount, death_benefit_option, premium_mode,
+            # 		 premium_schedule
+            # 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
+            #           (data['q0'], data['q1'], data['q2'], data['q3'],
+            #            data['q4'], data['q5'], data['q6'], data['q7'],
+            #            data['q8'], data['q9'], data['q10'],
+            #            data['q11'], data['q12'], data['q13']))
+            # conn.commit()
+            # print("-------------------------------> ")
+            # conn.close()
+            # print("entered into database")
             return jsonify({'message': 'Data written to SQLite database'})
         except Exception as e:
             print()
