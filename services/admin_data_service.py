@@ -16,5 +16,5 @@ def get_data():
     cursor.execute('SELECT * FROM details')
     data = cursor.fetchall()
     conn.close()
-    print(data)
+    print("get_Data_service",data)
     return jsonify({'result':data})

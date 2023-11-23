@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <title>Project Screen 1 - Basic Details</title>
     <style>
-          body {
+        body {
             font-family: Arial, sans-serif;
             background-color: navy;
             background-size: cover;
@@ -57,142 +57,243 @@
         .submit-button:hover {
             background-color: #45a049;
         }
-
-        /* styles.css */
-
-#chatbot {
-  width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.chatbot-msg {
-  background: #eee;
-  padding: 8px;
-  border-radius: 5px;
-}
-
-.user-msg {
-  background: #5897fb;
-  color: #fff;
-  padding: 8px;
-  border-radius: 5px;
-}
-
     </style>
 </head>
 <body>
-<div class="container">
+    <div class="container">
+        <h1>Project Screen 1</h1>
+        <a href = "/admin_login">Admin Login</a>
+        <a href = "/chatbot">Chat Bot</a>
+        <h2>Basic Details</h2>
+        <form action="/" method="POST">
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" name="first_name" id="first_name" value="{{ data.first_name | default('') }}" required>
+            </div>
 
-  <h1>Chatbot Form</h1>
+            <div class="form-group">
+                <label for="middle_name">Middle Name:</label>
+                <input type="text" name="middle_name" value="{{ data.middle_name | default('') }}">
+            </div>
 
-<!--  <div id="chatbot"></div>-->
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" name="last_name" value="{{ data.last_name | default('') }}" required>
+            </div>
 
-<!--  <div class="button-container">-->
-<!--    <button id="submit" class="submit-button">Submit</button>-->
-<!--  </div>-->
+            <div class="form-group">
+                <label for="phone_number">Phone Number:</label>
+                <input type="text" name="phone_number" value="{{ data.phone_number | default('') }}" required>
+            </div>
 
-<!--</div>-->
+            <div class="form-group">
+                <label for="email_address">Email Address:</label>
+                <input type="email" name="email_address" id="email" value="{{ data.email_address | default('') }}" required>
+            </div>
 
-<div id="chatbot">
-  <div id="questions"></div>
+            <div class="form-group">
+                <label for="sex">Sex:</label>
+                <select name="sex" required>
+                    <option value="male" {{ 'selected' if data.sex == 'male' }}>Male</option>
+                    <option value="female" {{ 'selected' if data.sex == 'female' }}>Female</option>
+                </select>
+            </div>
 
-  <div id="prompts"></div>
-      <div class="button-container">
-    <button id="submit" class="submit-button">Submit</button>
-  </div>
-</div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" name="age" value="{{ data.age | default('') }}" required>
+            </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="script.js"></script>
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth:</label>
+                <input type="date" name="date_of_birth" value="{{ data.date_of_birth | default('') }}" required>
+            </div>
 
-    <script>
-function startChatbot() {
-  const questions = [
-    "What is your first name?",
-    "What is your last name?",
-    "What is your age?",
-    "What is your phone number?",
-    "What is your sex",
-    "What is your email address? ",
-    "What is your date of birth (YYYY-MM-DD)? ",
-    "What is your address? ",
-    "What state do you live in? ",
-    "What is your risk class? ",
-    "What is the desired face amount? ",
-    "What death benefit option (level/increasing)? ",
-    "What premium mode (monthly/annual)? ",
-    "What premium schedule (maximum/target)? "
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea name="address" required>{{ data.address | default('') }}</textarea>
+            </div>
 
-    // Add more questions as needed
-  ];
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" name="state" value="{{ data.state | default('') }}" required>
+            </div>
 
-  const responses = {};
-  let currentQuestion = 0;
+            <div class="form-group">
+                <label for="risk_class">Risk Class:</label>
+                <select name="risk_class" required>
+                    <!-- ... (options for risk_class) ... -->
+                </select>
+            </div>
 
-  function displayQuestions() {
-    $('#questions').empty(); // Clear previous content
+            <div class="form-group">
+                <label for="face_amount">Face Amount:</label>
+                <input type="text" name="face_amount" placeholder="Example: 500,000 or 500000" value="{{ data.face_amount | default('') }}" required>
+            </div>
 
-    for (let i = 0; i < currentQuestion; i++) {
-      $('#questions').append(`
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <div>${questions[i]}</div>
-          <div>${responses[`q${i}`]}</div>
-        </div>
-      `);
+            <div class="form-group">
+                <label for="death_benefit_option">Death Benefit Option:</label>
+                <select name="death_benefit_option" required>
+                    <!-- ... (options for death_benefit_option) ... -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="premium_mode">Premium Mode:</label>
+                <select name="premium_mode" required>
+                    <!-- ... (options for premium_mode) ... -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="premium_schedule">Premium Schedule:</label>
+                <select name="premium_schedule" required>
+                    <!-- ... (options for premium_schedule) ... -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="section">Select a Section:</label>
+                <select name="section" required>
+                    <!-- ... (options for section) ... -->
+                </select>
+            </div>
+
+            <div class="ltc-rider-section">
+                <h3>LTC Rider</h3>
+                <!-- ... (form fields for LTC Rider) ... -->
+            </div>
+
+            <div class="linked-benefit-ltc-section">
+                <h3>Linked Benefit-LTC</h3>
+                <!-- ... (form fields for Linked Benefit-LTC) ... -->
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="submit-button">
+            </div>
+        </form>
+        <a href="/download" class="btn-download">Download Data</a>
+<!--    <a href = "/schedule">Scheduler</a>-->
+        <form >
+            <h2>Meeting Scheduler</h2>
+<!--             <div class="form-group">-->
+<!--                <label for="first_name" > Name:</label>-->
+<!--                <input type="text" id = "name" name="first_name" required>-->
+<!--            </div>-->
+
+            <div class="form-group">
+                <label for="consultant" >Consultant</label>
+                <input type="text" name="consultant" id = "consultant">
+            </div>
+
+            <div class="form-group">
+                <label for="location" >Location</label>
+                <input type="text" id = "location" name="location" required>
+            </div>
+<!--             <div class="form-group">-->
+<!--                <label for="email" >Receiver Email</label>-->
+<!--                <input type="text" id = "email" name="email" required>-->
+<!--            </div>-->
+
+            <div class="form-group">
+				<label for="time" >Time</label>
+				<select name="time" id="time" required>
+				<option value="Monday 7:30 PM">Monday 7:30 PM</option>
+                    <option value="Tuesday 7:30 PM">Tuesday 7:30 PM</option>
+                    <option value="Wednesday 7:30 PM">Wednesday 7:30 PM</option>
+                    <option value="Saturday 10:00 AM">Saturday 10:00 AM</option>
+                    <option value="Saturday 2:00 PM">Saturday 2:00 PM</option>
+                    <option value="Saturday 7:30 PM">Saturday 7:30 PM</option>
+                    <option value="Sunday 7:30 PM">Sunday 7:30 PM</option>
+				</select>
+			</div>
+			<div>
+				<span>Or give a timing you prefer</span>
+				<input type = "text" id = "time1">
+				<input type = "text" id = "time2">
+			</div>
+
+			<div>
+				<br>
+			</div>
+
+
+
+            <div class="form-group">
+                <input type="button" value="Schedule " class="submit-button" onclick="scheduleMeeting()">
+            </div>
+        </form>
+
+
+    </div>
+</body>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+	<script>
+     var data = {{ form_data | tojson | safe }};
+
+    document.getElementById("first_name").value = data.first_name || '';
+    document.getElementsByName("middle_name")[0].value = data.middle_name || '';
+    document.getElementsByName("last_name")[0].value = data.last_name || '';
+    document.getElementsByName("phone_number")[0].value = data.phone_number || '';
+    document.getElementById("email").value = data.email_address || '';
+    document.getElementsByName("sex")[0].value = data.sex || '';
+    document.getElementsByName("age")[0].value = data.age || '';
+    document.getElementsByName("date_of_birth")[0].value = data.date_of_birth || '';
+    document.getElementsByName("address")[0].value = data.address || '';
+    document.getElementsByName("state")[0].value = data.state || '';
+    document.getElementsByName("risk_class")[0].value = data.risk_class || '';
+    document.getElementsByName("face_amount")[0].value = data.face_amount || '';
+    document.getElementsByName("death_benefit_option")[0].value = data.death_benefit_option || '';
+    document.getElementsByName("premium_mode")[0].value = data.premium_mode || '';
+    document.getElementsByName("section")[0].value = data.section || '';
+
+    if (data.section === 'ltc_rider') {
+        document.getElementsByName("ltc_amount")[0].value = data.ltc_amount || '';
+        document.getElementsByName("maximum_monthly_benefit")[0].value = data.maximum_monthly_benefit || '';
+        document.getElementsByName("rate")[0].value = data.rate || '';
+        document.getElementsByName("term")[0].value = data.term || '';
+    } else if (data.section === 'linked_benefit_ltc') {
+        document.getElementsByName("premium_schedule")[0].value = data.premium_schedule || '';
+        document.getElementsByName("benefit_durations")[0].value = data.benefit_durations || '';
+        document.getElementsByName("inflation_benefit_option")[0].value = data.inflation_benefit_option || '';
     }
 
-    if (currentQuestion < questions.length) {
-      $('#questions').append(`
-        <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f0f0f0; padding: 5px; margin-bottom: 10px;">
-          <div>${questions[currentQuestion]}</div>
-          <input type="text" id="q${currentQuestion}">
-          <button id="submit" class="submit-button">Submit</button>
-        </div>
-      `);
+	function scheduleMeeting() {
+<!--    var name = document.getElementById("name").value;-->
+    var name = document.getElementById("first_name").value;
+    var consultant = document.getElementById("consultant").value;
+    var location = document.getElementById("location").value;
+    var time = document.getElementById("time").value;
+<!--    var email = document.getElementById("email").value;-->
+    var email = document.getElementById("email").value;
 
-      $('#submit').on('click', function() {
-        responses[`q${currentQuestion}`] = $(`#q${currentQuestion}`).val();
-        currentQuestion++;
-        displayQuestions();
+    var data_dict = {
+        'name': name,
+        'professional': consultant,
+        'location': location,
+        'time': time,
+        'email':email
+    };
 
-        if (currentQuestion === questions.length) {
-          // All questions answered, trigger API call
-          $.ajax({
-            url: '/chatbot',
-            data: JSON.stringify(responses),
-            type: 'POST',
-            contentType: "application/json",
-            dataType: 'json',
-            success: function(response) {
-              if (response.redirect) {
-                window.location.href = response.redirect;
-              }
-              // Handle success
-            },
-            error: function(data2) {
-              console.log(data2);
-              // Handle error
-            }
-          });
+    $.ajax({
+        url: '/schedule',
+        data: JSON.stringify(data_dict),
+        type: 'POST',
+        contentType: "application/json",
+        dataType: 'json',
+        success: function (data2) {
+            return true;
+        },
+        error: function (data2) {
+            console.log(data2);
+            return false;
         }
-      });
-    }
-  }
-
-  // Initial display of the questions
-  displayQuestions();
+    });
 }
 
-// Run on page load
-$(document).ready(function() {
-  startChatbot();
-});
 
-</script>
-
-
-</body>
+	</script>
 </html>

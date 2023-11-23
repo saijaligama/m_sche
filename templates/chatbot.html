@@ -106,7 +106,7 @@
 <body>
 <div class="container">
 
-    <h1>Chatbot Form</h1>
+    <h1>Live Chat</h1>
 
     <div id="chatbot">
         <div id="questions"></div>
@@ -145,6 +145,9 @@
 
         const responses = {};
         let currentQuestion = 0;
+
+
+
 
         function displayQuestions() {
             $('#questions').empty(); // Clear previous content
@@ -227,6 +230,129 @@
         });
     }
 }
+// ... (previous code)
+
+function handleButtonClick() {
+    const userResponse = $(`#userResponse`).val();
+
+    // Validate the user response based on the current question
+    if (currentQuestion === questions.length - 1) {
+        // Check if the user wants to schedule a meeting
+        if (questions[currentQuestion].includes("Would you like to schedule a meeting")) {
+            if (userResponse.toLowerCase() === 'yes') {
+                responses[`q${currentQuestion}`] = userResponse;
+                currentQuestion++;
+
+                // Ask three additional questions
+                questions.push(
+                    "What is your preferred date for the meeting?",
+                    "What is your preferred time for the meeting?",
+                    "Any specific topics you'd like to discuss in the meeting?"
+                    // Add more meeting-related questions as needed
+                );
+                displayQuestions();
+            } else if (userResponse.toLowerCase() === 'no') {
+                // If the user doesn't want to schedule a meeting, stop the process
+                responses[`q${currentQuestion}`] = userResponse;
+                displayQuestions(); // You may want to customize this part based on your needs
+            } else {
+                alert('Please enter "yes" or "no" for scheduling a meeting.');
+            }
+        }
+    } else {
+        // For other questions, you can add similar validation checks
+        // ...
+
+        // Move to the next question if validation is successful
+        responses[`q${currentQuestion}`] = userResponse;
+        currentQuestion++;
+        displayQuestions();
+    }
+
+    if (currentQuestion === questions.length) {
+        // All questions answered, trigger API call
+        $.ajax({
+            url: '/chatbot',
+            data: JSON.stringify(responses),
+            type: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function (response) {
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
+                // Handle success
+            },
+            error: function (data2) {
+                console.log(data2);
+                // Handle error
+            }
+        });
+    }
+}
+
+// ... (previous code)
+
+<!--function handleButtonClick() {-->
+<!--    const userResponse = $(`#userResponse`).val();-->
+
+<!--    // Validate the user response based on the current question-->
+<!--    if (currentQuestion === questions.length - 1 && questions[currentQuestion] === "Would you like to schedule a meeting") {-->
+<!--        // Check if the user wants to schedule a meeting-->
+<!--        if (userResponse.toLowerCase() === 'yes') {-->
+<!--            responses[`q${currentQuestion}`] = userResponse;-->
+<!--            currentQuestion++;-->
+
+<!--            // Ask three additional questions-->
+<!--            questions.push(-->
+<!--                "What is your preferred date for the meeting?",-->
+<!--                "What is your preferred time for the meeting?",-->
+<!--                "Any specific topics you'd like to discuss in the meeting?"-->
+<!--                // Add more meeting-related questions as needed-->
+<!--            );-->
+<!--            displayQuestions();-->
+<!--        } else if (userResponse.toLowerCase() === 'no') {-->
+<!--            // If the user doesn't want to schedule a meeting, stop the process-->
+<!--            responses[`q${currentQuestion}`] = userResponse;-->
+<!--            displayQuestions(); // You may want to customize this part based on your needs-->
+<!--        } else {-->
+<!--            alert('Please enter "yes" or "no" for scheduling a meeting.');-->
+<!--        }-->
+<!--    } else {-->
+<!--        // For other questions, you can add similar validation checks-->
+<!--        // ...-->
+
+<!--        // Move to the next question if validation is successful-->
+<!--        responses[`q${currentQuestion}`] = userResponse;-->
+<!--        currentQuestion++;-->
+<!--        displayQuestions();-->
+<!--    }-->
+
+<!--    if (currentQuestion === questions.length) {-->
+<!--        // All questions answered, trigger API call-->
+<!--        $.ajax({-->
+<!--            url: '/chatbot',-->
+<!--            data: JSON.stringify(responses),-->
+<!--            type: 'POST',-->
+<!--            contentType: "application/json",-->
+<!--            dataType: 'json',-->
+<!--            success: function (response) {-->
+<!--                if (response.redirect) {-->
+<!--                    window.location.href = response.redirect;-->
+<!--                }-->
+<!--                // Handle success-->
+<!--            },-->
+<!--            error: function (data2) {-->
+<!--                console.log(data2);-->
+<!--                // Handle error-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--}-->
+
+<!--// ... (remaining code)-->
+
+<!--// ... (remaining code)-->
 
         // Bind the click event outside the loop
         $('#submit').on('click', handleButtonClick);

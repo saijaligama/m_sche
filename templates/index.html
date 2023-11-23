@@ -58,14 +58,29 @@
             background-color: #45a049;
         }
     </style>
+    <style>
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            color: #333;
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Project Screen 1</h1>
-        <a href = "/admin_login">Admin Login</a>
-        <a href = "/chatbot">Chat Bot</a>
+        <a href="/admin_login" class="button">Admin Login</a>
+    <a href="/chatbot" class="button">Chat Bot</a>
         <h2>Basic Details</h2>
-        <form action="/" method="POST">
+        <form>
            <div class="form-group">
                 <label for="first_name">First Name:</label>
                 <input type="text" name="first_name" id = 'first_name' required>
@@ -237,13 +252,15 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Submit" class="submit-button">
-            </div>
+    <input type="button" value="Submit" onclick="submit_details()">
+</div>
         </form>
-        <a href="/download" class="btn-download">Download Data</a>
+        <a href="/download" class="button">Download Data</a>
+<!--        <input type="button" value="Download Data" class="button" onclick="download_data()">-->
 <!--    <a href = "/schedule">Scheduler</a>-->
         <form >
             <h2>Meeting Scheduler</h2>
+<!--             <input type="button" value="Download" class="button">-->
 <!--             <div class="form-group">-->
 <!--                <label for="first_name" > Name:</label>-->
 <!--                <input type="text" id = "name" name="first_name" required>-->
@@ -298,6 +315,104 @@
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
+<script>
+
+var id_number = ""
+    function submit_details(){
+    var firstName = document.getElementById("first_name").value;
+var middleName = document.getElementsByName("middle_name")[0].value;
+var lastName = document.getElementsByName("last_name")[0].value;
+var phoneNumber = document.getElementsByName("phone_number")[0].value;
+var emailAddress = document.getElementById("email").value;
+var sex = document.getElementsByName("sex")[0].value;
+var age = document.getElementsByName("age")[0].value;
+var dateOfBirth = document.getElementsByName("date_of_birth")[0].value;
+var address = document.getElementsByName("address")[0].value;
+var state = document.getElementsByName("state")[0].value;
+var riskClass = document.getElementsByName("risk_class")[0].value;
+var faceAmount = document.getElementsByName("face_amount")[0].value;
+var deathBenefitOption = document.getElementsByName("death_benefit_option")[0].value;
+var premiumMode = document.getElementsByName("premium_mode")[0].value;
+var premiumSchedule = document.getElementsByName("premium_schedule")[0].value;
+var section = document.getElementsByName("section")[0].value;
+
+// For LTC Rider Section
+var ltcAmount = document.getElementsByName("ltc_amount")[0].value;
+var maximumMonthlyBenefit = document.getElementsByName("maximum_monthly_benefit")[0].value;
+var rate = document.getElementsByName("rate")[0].value;
+var term = document.getElementsByName("term")[0].value;
+
+// For Linked Benefit-LTC Section
+var linkedBenefitLtcPremiumSchedule = document.getElementsByName("premium_schedule")[0].value;
+var benefitDurations = document.getElementsByName("benefit_durations")[0].value;
+var inflationBenefitOption = document.getElementsByName("inflation_benefit_option")[0].value;
+
+// ... (code for other form fields)
+
+// For Meeting Scheduler
+var consultant = document.getElementById("consultant").value;
+var location = document.getElementById("location").value;
+var time = document.getElementById("time").value;
+var time1 = document.getElementById("time1").value;
+var time2 = document.getElementById("time2").value;
+
+var formData = {
+    first_name: firstName,
+    middle_name: middleName,
+    last_name: lastName,
+    phone_number: phoneNumber,
+    email_address: emailAddress,
+    sex: sex,
+    age: age,
+    date_of_birth: dateOfBirth,
+    address: address,
+    state: state,
+    risk_class: riskClass,
+    face_amount: faceAmount,
+    death_benefit_option: deathBenefitOption,
+    premium_mode: premiumMode,
+    premium_schedule: premiumSchedule,
+    section: section,
+
+        ltc_amount: ltcAmount,
+        maximum_monthly_benefit: maximumMonthlyBenefit,
+        rate: rate,
+        term: term,
+        premium_schedule: linkedBenefitLtcPremiumSchedule,
+        benefit_durations: benefitDurations,
+        inflation_benefit_option: inflationBenefitOption
+
+};
+
+ $.ajax({
+        url: '/',
+        data: JSON.stringify(formData),
+        type: 'POST',
+        contentType: "application/json",
+        dataType: 'json',
+        success: function (data2) {
+        document.getElementById("first_name").value = data2['first_name']
+        id_number = data2['id']
+            return true;
+
+        },
+        error: function (data2) {
+            console.log(data2);
+            return false;
+        }
+    });
+
+
+    }
+</script>
+<script>
+<!--    function download_data(){-->
+<!--    -->
+<!--    }-->
+</script>
+
+
+
 	<script>
 
 	function scheduleMeeting() {
@@ -336,3 +451,5 @@
 
 	</script>
 </html>
+
+

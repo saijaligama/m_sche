@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQLite Data Display</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.6/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: navy;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 90%; /* Adjust the width as needed */
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            overflow: auto; /* Add scrollbars if needed when content exceeds the container */
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="data-container">
+        <h1>SQLite Data Display</h1>
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Sex</th>
+                    <th>Age</th>
+                    <th>Birth Date</th>
+                    <th>Address</th>
+                    <th>State</th>
+                    <th>Risk Class</th>
+                    <th>Face amount</th>
+                    <th>Death Benefit</th>
+                    <th>Premium Mode</th>
+                    <th>Premium Schedule</th>
+                    <th>Selection</th>
+                    <th>Rate</th>
+                    <th>Tobacco Preference</th>
+                    <th>Term</th>
+                    <th>Consultant</th>
+                    <th>Location</th>
+                    <th>Meeting Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for key, value in data.items() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+</body>
+</html>
