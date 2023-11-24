@@ -419,7 +419,7 @@ def get_data_by_id():
         result_dict = {}
 
         # Iterate through the keys and values
-        for key, value in zip(columns, result):
+        for key, value in zip(column_names, result):
             # Assign the value to the key in the dictionary
             result_dict[key] = value
         print(result_dict)
@@ -507,20 +507,128 @@ import os
 
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
+    form_data_section_1 = {
+        'first_name': '',
+
+        'last_name': '',
+        'age': '',
+        'phone_number': '',
+        'sex': '',
+        'email_address': '',
+
+
+        'date_of_birth': '',
+        'address': '',
+        'state': '',
+        'risk_class': '',
+        'face_amount': '',
+        'death_benefit_option': '',
+        'premium_mode': '',
+        'premium_section': '',
+        'section': '',
+        'ltc_amount': '',
+        'maximum_monthly_benefit': '',
+        'rate': '',
+        'term': '',
+        'meeting' : ''
+
+    }
+    form_data_section_2 = {
+        'first_name': '',
+
+        'last_name': '',
+        'age': '',
+        'phone_number': '',
+        'sex': '',
+        'email_address': '',
+
+        'date_of_birth': '',
+        'address': '',
+        'state': '',
+        'risk_class': '',
+        'face_amount': '',
+        'death_benefit_option': '',
+        'premium_mode': '',
+        'premium_section': '',
+        'section': '',
+        'premium_schedule': '',
+        'benefit_durations': '',
+        'inflation_benefit_option': '',
+        'meeting':''
+    }
     if request.method == 'GET':
         return render_template('chatbot.html')
     else:
         try:
             data = request.json
+
+
+
             print("inside data")
             print(data)
-            # # DB_NAME = 'details.db'
-            # #
-            # # conn = sqlite3.connect(DB_NAME)
+
+            ################# DATA changing based on options ####################
+
+            # if data['q4'] == 1:
+            #     data['q4'] = 'Male'
+            # else:
+            #     data['q4'] = 'Female'
             #
-            # # Establish connection to the database
-            # conn = sqlite3.connect('details.db')
-            # c = conn.cursor()
+            form_data = {}
+            data['q4'] = 'Male' if data['q4'] == '1' else 'Female'
+
+            data['q9'] = 'Preferred Plus Non Tobacco' if data['q6'] == '1' else \
+                'Preferred Non Tobacco' if data['q6'] == '2' else \
+                ' Standard Plus Non Tobacco' if data['q6'] == '3' else \
+                'Standard Non Tobacco' if data['q6'] == '4' else \
+                'Preferred Tobacco' if data['q6'] == '5' else \
+                'Standard Tobacco'
+
+            data['q11'] = 'Level' if data['q11'] == '1' else \
+                'Increasing'
+
+            data['q12'] = 'Monthly' if data['q12'] == '1' else \
+                'Annual'
+
+            data['q13'] = 'Maximum' if data['q13'] == '1' else \
+                'Target'
+
+            data['q14'] = 'LTC Rider' if data['q14'] == '1' else \
+                'Linked Benefit-LTC'
+
+            if data['q14'] == 'LTC Rider':
+
+                form_data = form_data_section_1
+                data['q16'] = "2%" if data['q16'] == '1' else \
+                    "3%" if data['q16'] == '2' else \
+                    "4%"
+                data['q18'] = "Preferred Tobacco" if data['q17'] == '1' else \
+                    "Tobacco" if data['q17'] == '2' else \
+                    "Preferred Non Tobacco" if data['q17'] == '3' else \
+                    "Tobacco"
+
+                data['q18'] = "10-Year" if data['q18'] == '1' else \
+                    "15-Year" if data['q18'] == '2' else \
+                    "20-year" if data['q18'] == '3' else \
+                    "30-Year" if data['q18'] == '4' else \
+                    "Permanent"
+
+            for i,j in zip(form_data,data):
+                form_data[i] = data[j]
+            print("data",data)
+            print("form_data",form_data)
+
+
+
+            # Establish connection to the database
+            conn = sqlite3.connect('details.db')
+            c = conn.cursor()
+
+            # if data['q14'] == '1':
+            #     form_data = form_data_section_1
+            #     if data['q19'] == "yes":
+            #         form_data['']
+
             # print(conn)
             #
             # # Insert data into the details table

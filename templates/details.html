@@ -68,43 +68,19 @@
         <table id="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Middle Name</th>
-                    <th>Last Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Sex</th>
-                    <th>Age</th>
-                    <th>Birth Date</th>
-                    <th>Address</th>
-                    <th>State</th>
-                    <th>Risk Class</th>
-                    <th>Face amount</th>
-                    <th>Death Benefit</th>
-                    <th>Premium Mode</th>
-                    <th>Premium Schedule</th>
-                    <th>Selection</th>
-                    <th>Rate</th>
-                    <th>Tobacco Preference</th>
-                    <th>Term</th>
-                    <th>Consultant</th>
-                    <th>Location</th>
-                    <th>Meeting Time</th>
+                    <th>Attribute</th>
+                    <th>Value</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    {% for key, value in data.items() %}
+                {% for key, value in data.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
                         <td>{{ value }}</td>
-                    {% endfor %}
-                </tr>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-
-
-
-
 </body>
 </html>
