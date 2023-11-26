@@ -104,7 +104,7 @@ def index():
         'face_amount': '',
         'death_benefit_option': '',
         'premium_mode': '',
-        'premium_schedule': '',
+        'premium_schedule':'',
         'section': '',
         'ltc_amount': '',
         'maximum_monthly_benefit': '',
@@ -114,10 +114,10 @@ def index():
         'benefit_durations': '',
         'inflation_benefit_option': '',
         'consultant': '',
-        'location': '',
-        'date': '',
-        'time': '',
-        'date_time': ''
+        'location':'',
+        'date':'',
+        'time':'',
+        'date_time':''
     }
     inserted_data = {}
 
@@ -126,15 +126,11 @@ def index():
 
     if request.method == 'POST':
         data = request.json
-        print("data", data)
-        # for key, value in data.items():
-        #     if value != '':
-        #         form_data[key] = value
+        for key, value in data.items():
+            if value != '':
+                form_data[key] = value
 
-        for key1, key2 in zip(form_data, data):
-            form_data[key1] = data[key2]
 
-        print("form_data", form_data)
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
@@ -173,8 +169,107 @@ def index():
         inserted_data = dict(zip(column_names, inserted_record))
     conn.close()
 
-    print(inserted_record)
-    return "well done"
+    print(inserted_data)
+    return jsonify(inserted_data)
+
+
+# @app.route('/', methods=['GET', 'POST'])
+# def index():
+#     if request.method == 'POST':
+#         # Retrieve form data
+#         first_name = request.form['first_name']
+#         middle_name = request.form['middle_name']
+#         last_name = request.form['last_name']
+#         phone_number = request.form['phone_number']
+#         email_address = request.form['email_address']
+#         sex = request.form['sex']
+#         age = request.form['age']
+#         date_of_birth = request.form['date_of_birth']
+#         address = request.form['address']
+#         state = request.form['state']
+#         risk_class = request.form['risk_class']
+#         face_amount = request.form['face_amount']
+#         death_benefit_option = request.form['death_benefit_option']
+#         premium_mode = request.form['premium_mode']
+#         premium_schedule = request.form['premium_schedule']
+#         section = request.form['section']
+#
+#         if section == 'ltc_rider':
+#             # Handle fields for LTC Rider section
+#             ltc_amount = request.form['ltc_amount']
+#             maximum_monthly_benefit = request.form['maximum_monthly_benefit']
+#             rate = request.form['rate']
+#             term = request.form['term']
+#             benefit_durations = None
+#             inflation_benefit_option = None  # Set to None for LTC Rider
+#
+#         elif section == 'linked_benefit_ltc':
+#             # Handle fields for Linked Benefit LTC section
+#             premium_schedule = request.form['premium_schedule']
+#             benefit_durations = request.form['benefit_durations']
+#             inflation_benefit_option = request.form['inflation_benefit_option']
+#
+#         else:
+#             flash('Invalid section selected')
+#             return redirect(url_for('index'))
+#
+#         # Save form data to the database
+#         #  print("This is the database name",DB_NAME)
+#         conn = sqlite3.connect(DB_NAME)
+#         c = conn.cursor()
+#         # c.execute('''SELECT * ''')
+#         print("check before this hero")
+#         c.execute('''INSERT INTO details (
+#                     first_name, middle_name, last_name, phone_number,
+#                     email_address, sex, age, date_of_birth, address,
+#                     state, risk_class, face_amount, death_benefit_option, premium_mode,
+#                      section, ltc_amount, maximum_monthly_benefit,
+#                     rate, term, premium_schedule, benefit_durations,
+#                     inflation_benefit_option
+#                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+#                   (first_name, middle_name, last_name, phone_number,
+#                    email_address, sex, age, date_of_birth, address,
+#                    state, risk_class, face_amount, death_benefit_option, premium_mode,
+#                    section, ltc_amount, maximum_monthly_benefit,
+#                    rate, term, premium_schedule, benefit_durations, inflation_benefit_option))
+#         conn.commit()
+#         conn.close()
+#
+#         return redirect(url_for('export'))
+#
+#     return render_template('index.html')
+
+
+@app.route('/export')
+def export():
+    # Retrieve all details from the database
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute('SELECT * FROM details')
+    rows = c.fetchall()
+    conn.close()
+
+    # Create a new Excel workbook
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+
+    # Write header row
+    header = ['ID', 'First Name', 'Middle Name', 'Last Name', 'Phone Number',
+              'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
+              'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount',
+              'Maximum Monthly Benefit',
+              'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
+    sheet.append(header)
+
+    # Write data rows
+    for row in rows:
+        sheet.append(row)
+
+    # Save the workbook
+    excel_file = 'details.xlsx'
+    workbook.save(excel_file)
+
+    return redirect(url_for('index'))
 
 
 @app.route('/download', methods=['GET'])
@@ -220,7 +315,7 @@ def schedule():
         print(data)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
-        c.execute(f'''INSERT INTO {TABLE_NAME} (consultant,
+        c.execute('''INSERT INTO details (consultant,
         location,
         time) 
         VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
@@ -257,13 +352,13 @@ def get_data_by_id():
     # Get the 'id' parameter from the query string
     if request.method == "GET":
         item_id = request.args.get('id')
-        print("inside get",item_id)
+        print("inside get")
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
 
-        c.execute(f"SELECT * FROM {TABLE_NAME} WHERE id=?", (item_id,))
+        c.execute("SELECT * FROM details WHERE id=?", (item_id,))
         result = c.fetchone()
-        c.execute(f"PRAGMA table_info({TABLE_NAME})")
+        c.execute("PRAGMA table_info(details)")
 
         # Fetch the results
         columns = c.fetchall()
@@ -378,16 +473,15 @@ def chatbot():
         'face_amount': '',
         'death_benefit_option': '',
         'premium_mode': '',
-        'premium_schedule': '',
+        'premium_section': '',
         'section': '',
         'ltc_amount': '',
         'maximum_monthly_benefit': '',
         'rate': '',
         'term': '',
         'meeting': '',
-        'consultant': 'None',
-        'location': 'None',
-        'time': 'None'
+        'benefit_durations': '',
+        'inflation_benefit_option': ''
     }
     form_data_section_2 = {
         'first_name': '',
@@ -405,15 +499,12 @@ def chatbot():
         'face_amount': '',
         'death_benefit_option': '',
         'premium_mode': '',
-        'premium_schedule': '',
+        'premium_section': '',
         'section': '',
-        'premium_schedule_ltc': '',
+        'premium_schedule': '',
         'benefit_durations': '',
         'inflation_benefit_option': '',
-        'meeting': '',
-        'consultant': 'None',
-        'location': 'None',
-        'time': 'None'
+        'meeting': ''
     }
     if request.method == 'GET':
         return render_template('chatbot.html')
@@ -453,15 +544,12 @@ def chatbot():
             data['q14'] = 'LTC Rider' if data['q14'] == '1' else \
                 'Linked Benefit-LTC'
 
-            conn = sqlite3.connect('details2.db')
-            c = conn.cursor()
-
             if data['q14'] == 'LTC Rider':
                 form_data = form_data_section_1
                 data['q16'] = "2%" if data['q16'] == '1' else \
                     "3%" if data['q16'] == '2' else \
                         "4%"
-                data['q17'] = "Preferred Tobacco" if data['q17'] == '1' else \
+                data['q18'] = "Preferred Tobacco" if data['q17'] == '1' else \
                     "Tobacco" if data['q17'] == '2' else \
                         "Preferred Non Tobacco" if data['q17'] == '3' else \
                             "Tobacco"
@@ -472,103 +560,100 @@ def chatbot():
                             "30-Year" if data['q18'] == '4' else \
                                 "Permanent"
 
+            for i, j in zip(form_data, data):
+                form_data[i] = data[j]
+            print("data", data)
+            print("form_data", form_data)
 
-                for i, j in zip(form_data, data):
-                    form_data[i] = data[j]
+            # Establish connection to the database
+            conn = sqlite3.connect('details2.db')
+            c = conn.cursor()
 
-                try:
-                    c.execute('''
-                            INSERT INTO details2 (
-                                first_name, last_name, phone_number,
-                                email_address, sex, age, date_of_birth, address,
-                                state, risk_class, face_amount, death_benefit_option, premium_mode,
-                                 premium_schedule,
-                                section, ltc_amount, maximum_monthly_benefit,
-                                rate, term,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
-                              (
-                                  form_data['first_name'], form_data['last_name'],
-                                  form_data['phone_number'],
-                                  form_data['email_address'], form_data['sex'], form_data['age'],
-                                  form_data['date_of_birth'],
-                                  form_data['address'],
-                                  form_data['state'], form_data['risk_class'], form_data['face_amount'],
-                                  form_data['death_benefit_option'], form_data['premium_mode'],
-                                  form_data['premium_schedule'],
-                                  form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
-                                  form_data['rate'], form_data['term'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
-                              )
-                              )
-                except Exception as e:
-                    print(e)
-                print("executed")
-                try:
-                    conn.commit()
-                except Exception as e:
-                    print(e, "commit error")
-                print("-------------------------------> ")
+            print(conn)
+            # ('''CREATE TABLE IF NOT EXISTS details (
+            #                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+            #                     first_name TEXT,
+            #                     middle_name TEXT,
+            #                     last_name TEXT,
+            #                     phone_number TEXT,
+            #                     email_address TEXT,
+            #                     sex TEXT,
+            #                     age INTEGER,
+            #                     date_of_birth TEXT,
+            #                     address TEXT,
+            #                     state TEXT,
+            #                     risk_class TEXT,
+            #                     face_amount TEXT,
+            #                     death_benefit_option TEXT,
+            #                     premium_mode TEXT,
+            #                     premium_schedule TEXT,
+            #                     section TEXT,
+            #                     ltc_amount TEXT,
+            #                     maximum_monthly_benefit TEXT,
+            #                     rate TEXT,
+            #                     term TEXT,
+            #                     benefit_durations TEXT,
+            #                     inflation_benefit_option TEXT,
+            #                     consultant TEXT,
+            #                     location TEXT,
+            #                     time TEXT
+            #                     )''')
 
-                conn.close()
-                print("entered into database")
-                return jsonify({'message': 'Data written to SQLite database'})
-            else:
-                form_data = form_data_section_2
-                data['q15'] = "Single" if data['q15'] == '1' else \
-                    "5-pay" if data['q15'] == '2' else \
-                    "10-pay" if data['q15'] == '3' else \
-                    "Pay-to-AFS"
-                data['q16'] = "2 years" if data['q16'] == '1' else \
-                    "3 years" if data['q16'] == '2' else \
-                    "4 years" if data['q16'] == '3' else \
-                    "5 years" if data['q16'] == '4' else \
-                    "6 years" if data['q16'] == '5' else \
-                    "7 years"
-                data['q17'] = "None" if data['q17'] == '1' else \
-                    "3% Simple" if data['q17'] == '2' else \
-                    "3% Compound" if data['q17'] == '3' else \
-                    "5% Compound"
+            # Insert data into the details table
+            # c.execute('''INSERT INTO details (
+            # 		first_name, last_name, age,phone_number
+            # 		, sex,email_address, date_of_birth, address,
+            # 		state, risk_class, face_amount, death_benefit_option, premium_mode,
+            # 		 premium_schedule,section,ltc_amount,maximum_monthly_benefit,rate,
+            # 		 term,benefit_durations,inflation_benefit_option,consultant,
+            # 		 location, time
+            # 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?)''',
+            #           (data['q0'], data['q1'], data['q2'], data['q3'],
+            #            data['q4'], data['q5'], data['q6'], data['q7'],
+            #            data['q8'], data['q9'], data['q10'],
+            #            data['q11'], data['q12'], data['q13'],form_data['section'],
+            #            form_data['ltc_amount'],form_data['maximum_monthly_benefit'],
+            #            form_data['rate'],form_data['term'],form_data['benefit_durations'],
+            #            form_data['inflation_benefit_option'],form_data['consultant'],
+            #            form_data['location'],form_data['time']))
 
-                for i, j in zip(form_data, data):
-                    form_data[i] = data[j]
+            print("hi")
+            try:
+                c.execute('''
+                        INSERT INTO details (
+                            first_name, last_name, phone_number,
+                            email_address, sex, age, date_of_birth, address,
+                            state, risk_class, face_amount, death_benefit_option, premium_mode, premium_section,
+                            section, ltc_amount, maximum_monthly_benefit,
+                            rate, term, benefit_durations,
+                            inflation_benefit_option
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (
+                              form_data['first_name'], form_data['last_name'],
+                              form_data['phone_number'],
+                              form_data['email_address'], form_data['sex'], form_data['age'],
+                              form_data['date_of_birth'],
+                              form_data['address'],
+                              form_data['state'], form_data['risk_class'], form_data['face_amount'],
+                              form_data['death_benefit_option'], form_data['premium_mode'],
+                              form_data['premium_section'],
+                              form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
+                              form_data['rate'], form_data['term'],
+                              form_data['benefit_durations'], form_data['inflation_benefit_option']
+                          )
+                          )
+            except Exception as e:
+                print(e)
+            print("executed")
+            try:
+                conn.commit()
+            except Exception as e:
+                print(e, "commit error")
+            print("-------------------------------> ")
 
-                try:
-                    c.execute('''
-                            INSERT INTO details2 (
-                                first_name, last_name, phone_number,
-                                email_address, sex, age, date_of_birth, address,
-                                state, risk_class, face_amount, death_benefit_option, premium_mode,
-                                 premium_schedule,
-                                section, premium_schedule_ltc, benefit_durations,
-                                inflation_benefit_option,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
-                              (
-                                  form_data['first_name'], form_data['last_name'],
-                                  form_data['phone_number'],
-                                  form_data['email_address'], form_data['sex'], form_data['age'],
-                                  form_data['date_of_birth'],
-                                  form_data['address'],
-                                  form_data['state'], form_data['risk_class'], form_data['face_amount'],
-                                  form_data['death_benefit_option'], form_data['premium_mode'],
-                                  form_data['premium_schedule'],
-                                  form_data['section'], form_data['premium_schedule_ltc'], form_data['benefit_durations'],
-                                  form_data['inflation_benefit_option'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
-                              )
-                              )
-                except Exception as e:
-                    print(e)
-                print("executed")
-                try:
-                    conn.commit()
-                except Exception as e:
-                    print(e, "commit error")
-                print("-------------------------------> ")
-
-                conn.close()
-                print("entered into database")
-                return jsonify({'message': 'Data written to SQLite database'})
-
+            conn.close()
+            print("entered into database")
+            return jsonify({'message': 'Data written to SQLite database'})
         except Exception as e:
             print()
             # Handle the exception, e.g., log the error or return an error response

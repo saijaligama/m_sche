@@ -164,6 +164,7 @@
         let currentQuestion = 0;
 
         function displayQuestions() {
+        console.log("inside display questions");
     $('#questions').empty(); // Clear previous content
 
     for (let i = 0; i < currentQuestion; i++) {
@@ -225,9 +226,14 @@ function handleButtonClick() {
 
             // Update displayQuestions here
             displayQuestions();
+
         } else if (userResponse.toLowerCase() === "2") {
             console.log("User selected option 2");
             // Handle option 2
+
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
             questions.push(
                 "Premium Schedule?"+ "1. Single \n" + "2. 5-pay \n" + "3. 10-pay \n"
                  + "4. Pay-to-AFS \n",
@@ -240,10 +246,14 @@ function handleButtonClick() {
 
                 // Add more meeting-related questions as needed
             );
+            console.log("iiijijij");
+            console.log(questions);
+
 
             // Update displayQuestions here
             displayQuestions();
-        } else {
+        }
+        else {
             console.log("Invalid input for LTC section");
             alert('Please enter "1" or "2" for LTC');
         }
@@ -258,11 +268,10 @@ function handleButtonClick() {
 
             // Ask additional questions
             questions.push(
-                "What is your preferred date for the meeting? \n"+
-                "(MM/DD/YYYY)",
-                "What is your preferred time(EST) for the meeting? \n" +
-                "(TT/MM)",
-                "Any specific topics you'd like to discuss in the meeting?"
+                "Any Preferred Consultant?",
+                "What Location are you i currently",
+                "What is your preferred Day & time(EST) for the meeting?"
+
                 // Add more meeting-related questions as needed
             );
 
@@ -272,6 +281,7 @@ function handleButtonClick() {
             // If the user doesn't want to schedule a meeting, stop the process
             responses[`q${currentQuestion}`] = userResponse;
             currentQuestion++;
+
 
             displayQuestions(); // Move displayQuestions here
         } else {
@@ -291,6 +301,7 @@ function handleButtonClick() {
     }
 
     if (currentQuestion === questions.length) {
+        alert('Your Details have been stored');
         // All questions answered, trigger API call
         console.log("Sending API call with responses:", responses); // Debugging line
         $.ajax({
