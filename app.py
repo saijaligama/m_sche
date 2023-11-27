@@ -6,6 +6,7 @@ from handlers.scheduler_handler import send_emails
 from services import admin_login_service, admin_data_service
 from services import chatbot_service
 import sqlite3
+import requests
 
 # def delete_table(database, table_name):
 #     try:
@@ -169,6 +170,7 @@ def index():
     c.execute('SELECT * FROM details WHERE id = ?', (inserted_id,))
     column_names = [description[0] for description in c.description]
     inserted_record = c.fetchone()
+    print(inserted_id)
     if inserted_record:
         inserted_data = dict(zip(column_names, inserted_record))
     conn.close()
@@ -180,12 +182,14 @@ def index():
 @app.route('/download', methods=['GET'])
 def download():
     id = session['latest_id']
+    print(id)
     # Retrieve all details from the database
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute('SELECT * FROM details WHERE ID = ?', (id,))
+    c.execute(f'SELECT * FROM {TABLE_NAME} WHERE ID = ?', (id,))
     rows = c.fetchall()
     conn.close()
+    print(rows)
 
     # Create a new Excel workbook
     workbook = openpyxl.Workbook()
@@ -216,15 +220,32 @@ def schedule():
     if request.method == 'GET':
         return render_template('scheduler.html')
     if request.method == 'POST':
+
         data = request.json
-        print(data)
+
+        if 'id' in data:
+            id = data['id']
+        else:
+            id = session['latest_id']
+        print("schedule data",data)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
-        c.execute(f'''INSERT INTO {TABLE_NAME} (consultant,
-        location,
-        time) 
-        VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
-        send_emails(data)
+
+        # c.execute(f'''INSERT INTO {TABLE_NAME}(consultant,
+        # location,
+        # time)
+        # WHERE id =
+        # VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
+        # id_number = 123  # replace with the actual value of id_number
+        try:
+            c.execute((f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}" WHERE id = {id} ;'''))
+            conn.commit()
+
+
+            send_emails(data)
+        except Exception as e:
+            print(e)
+
 
         return jsonify({'result': data})
 
@@ -416,7 +437,7 @@ def chatbot():
         'time': 'None'
     }
     if request.method == 'GET':
-        return render_template('chatbot.html')
+        return render_template('temp.html')
     else:
         try:
             data = request.json
@@ -473,8 +494,14 @@ def chatbot():
                                 "Permanent"
 
 
+
+
+
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
+
+
+
 
                 try:
                     c.execute('''
@@ -508,8 +535,20 @@ def chatbot():
                 except Exception as e:
                     print(e, "commit error")
                 print("-------------------------------> ")
-
+                inserted_id = c.lastrowid
                 conn.close()
+                if data['q19'] == 'yes':
+                    data1 = {'professional': form_data['consultant'],
+                             'location': form_data['location'],
+                             'time': form_data['time'],
+                             'id':inserted_id,
+                             'email':form_data['email_address'],
+                             'name':form_data['first_name']}
+                    target_url = 'http://127.0.0.1:8001/schedule'
+
+                    headers = {'Content-Type': 'application/json'}
+
+                    response = requests.post(target_url, json=data1, headers=headers)
                 print("entered into database")
                 return jsonify({'message': 'Data written to SQLite database'})
             else:
@@ -567,6 +606,8 @@ def chatbot():
 
                 conn.close()
                 print("entered into database")
+
+
                 return jsonify({'message': 'Data written to SQLite database'})
 
         except Exception as e:
