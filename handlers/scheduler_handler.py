@@ -21,6 +21,7 @@ def send_email(sender, receiver, subject, body, password, smtp_server, smtp_port
     except Exception as e:
         return f'Error sending email: {str(e)}'
 
+
 def send_emails(user_details):
     user_email = user_details['email']
     admin_email = 'saipjaligama@gmail.com'
@@ -35,9 +36,9 @@ def send_emails(user_details):
     time = user_details['time']
     # day = user_details['day']
     professional = user_details['professional']
-    user_name = user_details['name']
-
-    subject = f'Scheduled Zoom Meeting for {user_name}'
+    # user_name = user_details['name']
+    subject = user_details["subject"]
+    # subject = f'Scheduled Zoom Meeting for {user_name}'
 
     user_body = f'Your Zoom meeting has been scheduled with {professional} on {time}.'
     admin_body = f'A Zoom meeting has been scheduled with {professional} on {time}.'
@@ -65,8 +66,6 @@ def send_emails(user_details):
 #     server.quit()
 #
 #     print('Email sent!')
-
-
 
 
 # Example user details
