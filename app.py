@@ -227,7 +227,7 @@ def schedule():
             id = data['id']
         else:
             id = session['latest_id']
-        print("schedule data",data)
+        print("schedule data", data)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
 
@@ -238,14 +238,13 @@ def schedule():
         # VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
         # id_number = 123  # replace with the actual value of id_number
         try:
-            c.execute((f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}" WHERE id = {id} ;'''))
+            c.execute((
+                          f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}" WHERE id = {id} ;'''))
             conn.commit()
-
 
             send_emails(data)
         except Exception as e:
             print(e)
-
 
         return jsonify({'result': data})
 
@@ -278,7 +277,7 @@ def get_data_by_id():
     # Get the 'id' parameter from the query string
     if request.method == "GET":
         item_id = request.args.get('id')
-        print("inside get",item_id)
+        print("inside get", item_id)
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
 
@@ -378,14 +377,10 @@ def get_data_by_id():
     #     return {'error': 'Item not found'}, 404
 
 
-import os
-
-
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
     form_data_section_1 = {
         'first_name': '',
-
         'last_name': '',
         'age': '',
         'phone_number': '',
@@ -412,13 +407,11 @@ def chatbot():
     }
     form_data_section_2 = {
         'first_name': '',
-
         'last_name': '',
         'age': '',
         'phone_number': '',
         'sex': '',
         'email_address': '',
-
         'date_of_birth': '',
         'address': '',
         'state': '',
@@ -436,15 +429,35 @@ def chatbot():
         'location': 'None',
         'time': 'None'
     }
+    form_data_section_3 = {
+        'first_name': '',
+        'last_name': '',
+        'age': '',
+        'phone_number': '',
+        'sex': '',
+        'email_address': '',
+        'date_of_birth': '',
+        'address': '',
+        'state': '',
+        'risk_class': '',
+        'face_amount': '',
+        'death_benefit_option': '',
+        'premium_mode': '',
+        'premium_schedule': '',
+        'section': '',
+        'meeting': '',
+        'consultant': 'None',
+        'location': 'None',
+        'time': 'None'
+    }
+
     if request.method == 'GET':
         return render_template('temp.html')
     else:
         try:
             data = request.json
-
             print("inside data")
             print(data)
-
             ################# DATA changing based on options ####################
 
             # if data['q4'] == 1:
@@ -464,19 +477,15 @@ def chatbot():
 
             data['q11'] = 'Level' if data['q11'] == '1' else \
                 'Increasing'
-
             data['q12'] = 'Monthly' if data['q12'] == '1' else \
                 'Annual'
-
             data['q13'] = 'Maximum' if data['q13'] == '1' else \
                 'Target'
-
             data['q14'] = 'LTC Rider' if data['q14'] == '1' else \
                 'Linked Benefit-LTC'
 
             conn = sqlite3.connect('details2.db')
             c = conn.cursor()
-
             if data['q14'] == 'LTC Rider':
                 form_data = form_data_section_1
                 data['q16'] = "2%" if data['q16'] == '1' else \
@@ -486,22 +495,18 @@ def chatbot():
                     "Tobacco" if data['q17'] == '2' else \
                         "Preferred Non Tobacco" if data['q17'] == '3' else \
                             "Tobacco"
-
                 data['q18'] = "10-Year" if data['q18'] == '1' else \
                     "15-Year" if data['q18'] == '2' else \
                         "20-year" if data['q18'] == '3' else \
                             "30-Year" if data['q18'] == '4' else \
                                 "Permanent"
-
-
-
-
+                if 'q23' in data:
+                    form_data['subject'] = data['q23']
+                else:
+                    form_data['subject'] = ''
 
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
-
-
-
 
                 try:
                     c.execute('''
@@ -541,32 +546,35 @@ def chatbot():
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],
                              'time': form_data['time'],
-                             'id':inserted_id,
-                             'email':form_data['email_address'],
-                             'name':form_data['first_name']}
+                             'id': inserted_id,
+                             'email': form_data['email_address'],
+                             'name': form_data['first_name'],
+                             'subject': form_data['subject']}
                     target_url = 'http://127.0.0.1:8001/schedule'
-
                     headers = {'Content-Type': 'application/json'}
-
                     response = requests.post(target_url, json=data1, headers=headers)
                 print("entered into database")
                 return jsonify({'message': 'Data written to SQLite database'})
-            else:
+            elif data['q14'] == 'Linked Benefit-LTC':
                 form_data = form_data_section_2
                 data['q15'] = "Single" if data['q15'] == '1' else \
                     "5-pay" if data['q15'] == '2' else \
-                    "10-pay" if data['q15'] == '3' else \
-                    "Pay-to-AFS"
+                        "10-pay" if data['q15'] == '3' else \
+                            "Pay-to-AFS"
                 data['q16'] = "2 years" if data['q16'] == '1' else \
                     "3 years" if data['q16'] == '2' else \
-                    "4 years" if data['q16'] == '3' else \
-                    "5 years" if data['q16'] == '4' else \
-                    "6 years" if data['q16'] == '5' else \
-                    "7 years"
+                        "4 years" if data['q16'] == '3' else \
+                            "5 years" if data['q16'] == '4' else \
+                                "6 years" if data['q16'] == '5' else \
+                                    "7 years"
                 data['q17'] = "None" if data['q17'] == '1' else \
                     "3% Simple" if data['q17'] == '2' else \
-                    "3% Compound" if data['q17'] == '3' else \
-                    "5% Compound"
+                        "3% Compound" if data['q17'] == '3' else \
+                            "5% Compound"
+                if 'q22' in data:
+                    form_data['subject'] =data['q22']
+                else:
+                    form_data['subject'] = ''
 
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
@@ -590,7 +598,8 @@ def chatbot():
                                   form_data['state'], form_data['risk_class'], form_data['face_amount'],
                                   form_data['death_benefit_option'], form_data['premium_mode'],
                                   form_data['premium_schedule'],
-                                  form_data['section'], form_data['premium_schedule_ltc'], form_data['benefit_durations'],
+                                  form_data['section'], form_data['premium_schedule_ltc'],
+                                  form_data['benefit_durations'],
                                   form_data['inflation_benefit_option'],
                                   form_data['consultant'], form_data['location'], form_data['time']
                               )
@@ -603,13 +612,78 @@ def chatbot():
                 except Exception as e:
                     print(e, "commit error")
                 print("-------------------------------> ")
-
+                inserted_id = c.lastrowid
                 conn.close()
+                if data['q18'] == 'yes':
+                    data1 = {'professional': form_data['consultant'],
+                             'location': form_data['location'],
+                             'time': form_data['time'],
+                             'id': inserted_id,
+                             'email': form_data['email_address'],
+                             'name': form_data['first_name'],
+                             'subject': form_data['subject']}
+                    target_url = 'http://127.0.0.1:8001/schedule'
+
+                    headers = {'Content-Type': 'application/json'}
+
+                    response = requests.post(target_url, json=data1, headers=headers)
+                    print(response)
                 print("entered into database")
 
-
                 return jsonify({'message': 'Data written to SQLite database'})
+            else:
+                form_data = form_data_section_3
+                form_data['subject'] = data['q19']
+                for i, j in zip(form_data, data):
+                    form_data[i] = data[j]
+                try:
+                    c.execute('''
+                            INSERT INTO details2 (
+                                first_name, last_name, phone_number,
+                                email_address, sex, age, date_of_birth, address,
+                                state, risk_class, face_amount, death_benefit_option, premium_mode,
+                                 premium_schedule,
+                                section, premium_schedule_ltc, benefit_durations,
+                                inflation_benefit_option,consultant,location,time
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                              (
+                                  form_data['first_name'], form_data['last_name'],
+                                  form_data['phone_number'],
+                                  form_data['email_address'], form_data['sex'], form_data['age'],
+                                  form_data['date_of_birth'],
+                                  form_data['address'],
+                                  form_data['state'], form_data['risk_class'], form_data['face_amount'],
+                                  form_data['death_benefit_option'], form_data['premium_mode'],
+                                  form_data['premium_schedule'],
+                                  form_data['section'],
+                                  form_data['consultant'], form_data['location'], form_data['time']
+                              )
+                              )
+                except Exception as e:
+                    print(e)
+                print("executed")
+                try:
+                    conn.commit()
+                except Exception as e:
+                    print(e, "commit error")
+                print("-------------------------------> ")
+                inserted_id = c.lastrowid
+                conn.close()
+                if data['q18'] == 'yes':
+                    data1 = {'professional': form_data['consultant'],
+                             'location': form_data['location'],
+                             'time': form_data['time'],
+                             'id': inserted_id,
+                             'email': form_data['email_address'],
+                             'name': form_data['first_name'],
+                             'subject': form_data['subject']}
+                    target_url = 'http://127.0.0.1:8001/schedule'
 
+                    headers = {'Content-Type': 'application/json'}
+
+                    response = requests.post(target_url, json=data1, headers=headers)
+                    print(response)
+                print("entered into database")
         except Exception as e:
             print()
             # Handle the exception, e.g., log the error or return an error response
