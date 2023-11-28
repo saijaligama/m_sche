@@ -106,7 +106,7 @@
 <body>
 <div class="container">
 
-    <h1>Chatbot Form</h1>
+    <h1>Live Chat</h1>
 
     <div id="chatbot">
         <div id="questions"></div>
@@ -122,6 +122,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="script.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function startChatbot() {
         const questions = [
@@ -129,17 +131,34 @@
             "What is your last name?",
             "What is your age?",
             "What is your phone number?",
-            "What is your sex",
+            "What is your sex \n" +
+            "1. Male \n" +
+            "2.Female",
             "What is your email address? ",
             "What is your date of birth (YYYY-MM-DD)? ",
             "What is your address? ",
             "What state do you live in? ",
-            "What is your risk class? ",
+            "What is your risk class?\n" +
+            "1. Preferred Plus Non Tobacco,\n" +
+            "2. Preferred Non Tobacco,\n" +
+            "3. Standard Plus Non Tobacco,\n" +
+            "4. Standard Non Tobacco,\n" +
+            "5. Preferred Tobacco,\n" +
+            "6. Standard Tobacco",
             "What is the desired face amount? ",
-            "What death benefit option (level/increasing)? ",
-            "What premium mode (monthly/annual)? ",
-            "What premium schedule (maximum/target)? ",
-            "Would you like to shcedule a meeting"
+            "What death benefit option (level/increasing)? \n" +
+            "1.Level \n" +
+            "2. Increasing",
+            "What premium mode (monthly/annual)? \n"+
+            "1.Monthly \n"+
+            "2. Annual",
+            "What premium schedule (maximum/target)? \n"+
+            "1. Maximum \n" +
+            "2. Target",
+            "Select a section\n"+
+            "1. LTC Rider\n" +
+            "2. Linked Benefit-LTC"
+
             // Add more questions as needed
         ];
 
@@ -147,67 +166,178 @@
         let currentQuestion = 0;
 
         function displayQuestions() {
-            $('#questions').empty(); // Clear previous content
+        console.log("inside display questions");
+    $('#questions').empty(); // Clear previous content
 
-            for (let i = 0; i < currentQuestion; i++) {
-                $('#questions').append(`
-                    <div class="chat-container">
-                        <div class="question">${questions[i]}</div>
-                        ${responses[`q${i}`] ? `<div class="response">${responses[`q${i}`]}</div>` : ''}
-                    </div>
-                `);
+    for (let i = 0; i < currentQuestion; i++) {
+        const formattedQuestion = questions[i].replace(/\n/g, '<br>');
+        const formattedResponse = (responses[`q${i}`] || '').replace(/\n/g, '<br>');
+
+        $('#questions').append(`
+            <div class="chat-container">
+                <div class="question">${formattedQuestion}</div>
+                ${formattedResponse ? `<div class="response">${formattedResponse}</div>` : ''}
+            </div>
+        `);
+    }
+
+    if (currentQuestion < questions.length) {
+        const formattedQuestion = questions[currentQuestion].replace(/\n/g, '<br>');
+        const formattedResponse = (responses[`q${currentQuestion}`] || '').replace(/\n/g, '<br>');
+
+        $('#questions').append(`
+            <div class="chat-container">
+                <div class="question">${formattedQuestion}</div>
+                ${formattedResponse ? `<div class="response">${formattedResponse}</div>` : ''}
+            </div>
+        `);
+    }
+}
+function displayQuestionsWithTimeout() {
+<!--            displayQuestions(); // Display current questions-->
+
+            // Set a timeout for 30 seconds
+            const timeout = setTimeout(function () {
+            Swal.fire({
+            title: "Are you still there?",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user is still there, restart the timeout
+                displayQuestionsWithTimeout();
+            } else {
+                // If the user is not there, handle it as if they submitted an empty response
+                handleButtonClick();
+            }
+        });
+    }, 30000);  // 30 seconds
+
+            // Function to clear the timeout if a response is received
+            function clearQuestionTimeout() {
+                clearTimeout(timeout);
             }
 
-            if (currentQuestion < questions.length) {
-                $('#questions').append(`
-                    <div class="chat-container">
-                        <div class="question" style="background-color: #5897fb; color: white; padding: 8px; border-radius: 5px; text-align: left; margin-bottom: 5px; width: 70%;">${questions[currentQuestion]}</div>
-                        ${responses[`q${currentQuestion}`] ? `<div class="response" style="background-color: #fff; color: #5897fb; padding: 8px; border-radius: 5px; text-align: right; margin-bottom: 5px; width: 70%;">${responses[`q${currentQuestion}`]}</div>` : ''}
-                    </div>
-                `);
-            }
+            // Attach the clear timeout function to the submit button
+            $('#submit').off('click', clearQuestionTimeout).on('click', clearQuestionTimeout);
         }
+
+        displayQuestionsWithTimeout();
 
         // Initial display of the questions
         displayQuestions();
 
-        function handleButtonClick() {
+function handleButtonClick() {
     const userResponse = $(`#userResponse`).val();
+    console.log("Handling button click:", userResponse);
 
-    // Validate the user response based on the current question
-    if (currentQuestion === questions.length - 1) {
-        // Check if the user wants to schedule a meeting
-        if (userResponse.toLowerCase() === 'yes') {
+    clearTimeout(timeout);
+
+    if (questions[currentQuestion].includes("Select a section\n" +
+        "1. LTC Rider\n" +
+        "2. Linked Benefit-LTC")) {
+        console.log("Handling LTC section");
+
+        if (userResponse.toLowerCase() === "1") {
+            console.log("User selected option 1");
+
+            // Handle option 1
             responses[`q${currentQuestion}`] = userResponse;
             currentQuestion++;
 
-            // Ask three additional questions
+            // Ask additional questions
             questions.push(
-                "What is your preferred date for the meeting?",
-                "What is your preferred time for the meeting?",
-                "Any specific topics you'd like to discuss in the meeting?"
+                "Amount?\n" + "Default Amount is the same s Face amount",
+                "Maximum Monthly Benefit? \n" + "1. 2% \n" + "2. 3% \n" + "3. 4% \n",
+                "Rate? \n" + "1. Preferred Tobacco \n" + "2. Tobacco" +
+                "3. Preferred Non Tobacco \n" + "4. Tobacco",
+                "Term?\n" + "1. 10-Year \n" + "2. 15-Year \n" + "3. 20-Year \n" +
+                "4. 30-Year \n" + "5. Permanent",
+                "Would you like to schedule a meeting"
                 // Add more meeting-related questions as needed
             );
+
+            // Update displayQuestions here
             displayQuestions();
+
+        } else if (userResponse.toLowerCase() === "2") {
+            console.log("User selected option 2");
+            // Handle option 2
+
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
+            questions.push(
+                "Premium Schedule?"+ "1. Single \n" + "2. 5-pay \n" + "3. 10-pay \n"
+                 + "4. Pay-to-AFS \n",
+                "Benefit Durations?" + "1. 2 years \n" + "2. 3 Years \n" + "3. 4 years \n" +
+                "4. 5 Years \n" +"5. 6 Years \n" + "6. 7 Years",
+                "Inflation Benefit Option?"+"1. None \n" +
+                "2. 3 % Simple \n" + "3. 3% Compound \n" +
+                "4. 5% Compound \n",
+                "Would you like to schedule a meeting"
+
+                // Add more meeting-related questions as needed
+            );
+            console.log("iiijijij");
+            console.log(questions);
+
+
+            // Update displayQuestions here
+            displayQuestions();
+        }
+        else {
+            console.log("Invalid input for LTC section");
+            alert('Please enter "1" or "2" for LTC');
+        }
+    } else if (questions[currentQuestion].includes("Would you like to schedule a meeting")) {
+        console.log("Handling schedule a meeting");
+
+        // Check if the user wants to schedule a meeting
+        if (userResponse.toLowerCase() === 'yes') {
+            console.log("User wants to schedule a meeting");
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
+            // Ask additional questions
+            questions.push(
+                "Any Preferred Consultant?",
+                "What Location are you i currently",
+                "What is your preferred Day & time(EST) for the meeting?"
+
+                // Add more meeting-related questions as needed
+            );
+
+            displayQuestions(); // Move displayQuestions here
         } else if (userResponse.toLowerCase() === 'no') {
+            console.log("User does not want to schedule a meeting");
             // If the user doesn't want to schedule a meeting, stop the process
             responses[`q${currentQuestion}`] = userResponse;
-            displayQuestions(); // You may want to customize this part based on your needs
+            currentQuestion++;
+
+
+            displayQuestions(); // Move displayQuestions here
         } else {
+            console.log("Invalid input for scheduling a meeting");
             alert('Please enter "yes" or "no" for scheduling a meeting.');
         }
     } else {
+        console.log("Handling other questions");
         // For other questions, you can add similar validation checks
         // ...
 
         // Move to the next question if validation is successful
         responses[`q${currentQuestion}`] = userResponse;
         currentQuestion++;
-        displayQuestions();
+
+        displayQuestions(); // Move displayQuestions here
     }
 
     if (currentQuestion === questions.length) {
+        alert('Your Details have been stored');
         // All questions answered, trigger API call
+        console.log("Sending API call with responses:", responses); // Debugging line
         $.ajax({
             url: '/chatbot',
             data: JSON.stringify(responses),
@@ -228,7 +358,10 @@
     }
 }
 
-        // Bind the click event outside the loop
+
+
+
+
         $('#submit').on('click', handleButtonClick);
     }
 

@@ -85,9 +85,15 @@
                     <th>Premium Mode</th>
                     <th>Premium Schedule</th>
                     <th>Selection</th>
+                    <th>LTC Amount</th>
+                    <th>Max Benefits</th>
                     <th>Rate</th>
-                    <th>Tobacco Preference</th>
                     <th>Term</th>
+                    <th>LTC Schedule</th>
+                    <th>Benefit Duration</th>
+                    <th>Inflation Option</th>
+
+
                     <th>Consultant</th>
                     <th>Location</th>
                     <th>Meeting Time</th>
@@ -97,29 +103,131 @@
         </table>
     </div>
 
-    <script>
+<!--    <script>-->
+<!--        fetch('/get_data')-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const container = document.querySelector('tbody');-->
+
+<!--                data.result.forEach(row => {-->
+<!--                    const tr = document.createElement('tr');-->
+<!--                    row.forEach(item => {-->
+<!--                        const td = document.createElement('td');-->
+<!--                        td.textContent = item;-->
+<!--                        tr.appendChild(td);-->
+<!--                    });-->
+<!--                    container.appendChild(tr);-->
+<!--                });-->
+<!--            });-->
+<!--    </script>-->
+
+         <script>
         fetch('/get_data')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.querySelector('tbody');
+  .then(response => response.json())
+  .then(data => {
+    const container = document.querySelector('tbody');
 
-                data.result.forEach(row => {
-                    const tr = document.createElement('tr');
-                    row.forEach(item => {
-                        const td = document.createElement('td');
-                        td.textContent = item;
-                        tr.appendChild(td);
-                    });
-                    container.appendChild(tr);
-                });
-            });
+    data.result.forEach(row => {
+      const tr = document.createElement('tr');
+
+      row.forEach((item, index) => {
+        const td = document.createElement('td');
+
+        if (index === 0) {
+          // Style ID cell
+          td.style.color = 'blue';
+          td.style.textDecoration = 'underline';
+          td.style.cursor = 'pointer';
+
+          // Add click handler
+          td.addEventListener('click', () => {
+            // Redirect to a new HTML page with the details of the clicked ID
+            window.location.href = '/get_data_by_id?id=' + item;
+          });
+        }
+
+        td.textContent = item;
+        tr.appendChild(td);
+      });
+
+      container.appendChild(tr);
+    });
+  });
+
     </script>
-
-    <script>
+     <script>
         $(document).ready(function() {
             $('#data-table').DataTable();
         });
     </script>
+
+<!--     <script>-->
+<!--        fetch('/get_data')-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const container = document.querySelector('tbody');-->
+
+<!--                data.result.forEach(row => {-->
+<!--                  const tr = document.createElement('tr');-->
+<!--                  row.forEach((item, index) => {-->
+<!--                    const td = document.createElement('td');-->
+<!--                    if (index === 0) {-->
+<!--                      // First column is ID-->
+<!--                      td.addEventListener('click', () => {-->
+<!--                        fetch('/get_data_by_id?id=' + item);-->
+<!--                      });-->
+<!--                    }-->
+<!--                    td.textContent = item;-->
+<!--                    tr.appendChild(td);-->
+<!--                  });-->
+<!--                  container.appendChild(tr);-->
+<!--                });-->
+<!--            });-->
+<!--    </script>-->
+
+<!--    <script>-->
+<!--        fetch('/get_data')-->
+<!--  .then(response => response.json())-->
+<!--  .then(data => {-->
+
+<!--    const container = document.querySelector('tbody');-->
+
+<!--    data.result.forEach(row => {-->
+
+<!--      // Create ID cell-->
+<!--      const idCell = document.createElement('td');-->
+
+<!--      // Make ID cell look like link-->
+<!--      idCell.style.color = 'blue';-->
+<!--      idCell.style.textDecoration = 'underline';-->
+<!--      idCell.style.cursor = 'pointer';-->
+
+<!--      // Set ID value-->
+<!--      idCell.textContent = row[0];-->
+
+<!--      // Add click handler to fetch by ID-->
+<!--      idCell.addEventListener('click', () => {-->
+<!--        fetch('/get_data_by_id?id=' + row[0]);-->
+<!--      });-->
+
+<!--      // Create rest of cells-->
+<!--      row.forEach((item, index) => {-->
+<!--        if (index !== 0) {-->
+<!--          const cell = document.createElement('td');-->
+<!--          cell.textContent = item;-->
+<!--          tr.appendChild(cell);-->
+<!--        }-->
+<!--      });-->
+
+<!--      // Add ID cell and row to table-->
+<!--      tr.appendChild(idCell);-->
+<!--      container.appendChild(tr);-->
+
+<!--    });-->
+
+<!--  });-->
+<!--    </script>-->
+
 </body>
 </html>
 
