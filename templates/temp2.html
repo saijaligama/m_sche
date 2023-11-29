@@ -155,7 +155,8 @@
             "2. Target",
             "Select a section\n"+
             "1. LTC Rider\n" +
-            "2. Linked Benefit-LTC"
+            "2. Linked Benefit-LTC \n"+
+            "3. None"
 
             // Add more questions as needed
         ];
@@ -191,41 +192,14 @@
         `);
     }
 }
-function displayQuestionsWithTimeout() {
-            displayQuestions(); // Display current questions
 
-            // Set a timeout for 30 seconds
-            const timeout = setTimeout(function () {
-                // If no response within 30 seconds, prompt the user
-                const response = confirm("Are you still there?", ["Yes", "No"]);
-                if (response) {
-                    // If the user is still there, restart the timeout
-                    displayQuestionsWithTimeout();
-                } else {
-                    // If the user is not there, handle it as if they submitted an empty response
-                    handleButtonClick();
-                }
-            }, 30000); // 30 seconds
-
-            // Function to clear the timeout if a response is received
-            function clearQuestionTimeout() {
-                clearTimeout(timeout);
-            }
-
-            // Attach the clear timeout function to the submit button
-            $('#submit').off('click', clearQuestionTimeout).on('click', clearQuestionTimeout);
-        }
-
-        displayQuestionsWithTimeout();
 
         // Initial display of the questions
-<!--        displayQuestions();-->
+        displayQuestions();
 
 function handleButtonClick() {
     const userResponse = $(`#userResponse`).val();
     console.log("Handling button click:", userResponse);
-
-    clearTimeout(timeout);
 
     if (questions[currentQuestion].includes("Select a section\n" +
         "1. LTC Rider\n" +
@@ -251,7 +225,7 @@ function handleButtonClick() {
                 // Add more meeting-related questions as needed
             );
 
-            // Update displayQuestions here
+            // Update displayQuestions herea
             displayQuestions();
 
         } else if (userResponse.toLowerCase() === "2") {
@@ -274,6 +248,25 @@ function handleButtonClick() {
                 // Add more meeting-related questions as needed
             );
             console.log("iiijijij");
+            console.log(questions);
+
+
+            // Update displayQuestions here
+            displayQuestions();
+        }
+        else if (userResponse.toLowerCase() === "3") {
+            console.log("User selected option 3");
+            // Handle option 2
+
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
+            questions.push(
+                "Would you like to schedule a meeting"
+
+                // Add more meeting-related questions as needed
+            );
+            console.log("3rd option");
             console.log(questions);
 
 

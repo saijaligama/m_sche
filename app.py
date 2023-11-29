@@ -231,12 +231,6 @@ def schedule():
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
 
-        # c.execute(f'''INSERT INTO {TABLE_NAME}(consultant,
-        # location,
-        # time)
-        # WHERE id =
-        # VALUES (?,?,?)''', (data['professional'], data['location'], data['time']))
-        # id_number = 123  # replace with the actual value of id_number
         try:
             c.execute((
                           f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}" WHERE id = {id} ;'''))
@@ -482,7 +476,8 @@ def chatbot():
             data['q13'] = 'Maximum' if data['q13'] == '1' else \
                 'Target'
             data['q14'] = 'LTC Rider' if data['q14'] == '1' else \
-                'Linked Benefit-LTC'
+                'Linked Benefit-LTC' if data['q14'] == '2' else \
+                'skip'
 
             conn = sqlite3.connect('details2.db')
             c = conn.cursor()
@@ -632,10 +627,12 @@ def chatbot():
 
                 return jsonify({'message': 'Data written to SQLite database'})
             else:
+                print("inside q14 else")
                 form_data = form_data_section_3
-                form_data['subject'] = data['q19']
+
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
+                print(form_data)
                 try:
                     c.execute('''
                             INSERT INTO details2 (
@@ -643,9 +640,9 @@ def chatbot():
                                 email_address, sex, age, date_of_birth, address,
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
-                                section, premium_schedule_ltc, benefit_durations,
-                                inflation_benefit_option,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                                section,
+                                consultant,location,time
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -669,7 +666,11 @@ def chatbot():
                 print("-------------------------------> ")
                 inserted_id = c.lastrowid
                 conn.close()
-                if data['q18'] == 'yes':
+                if 'q18' in data:
+                    form_data['subject'] =data['q18']
+                else:
+                    form_data['subject'] = ''
+                if data['q15'] == 'yes':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],
                              'time': form_data['time'],
@@ -684,6 +685,7 @@ def chatbot():
                     response = requests.post(target_url, json=data1, headers=headers)
                     print(response)
                 print("entered into database")
+                return jsonify({'message': 'Data written to SQLite database'})
         except Exception as e:
             print()
             # Handle the exception, e.g., log the error or return an error response

@@ -172,9 +172,11 @@
             </div>
             <div class="form-group">
                 <label for="section">Select a Section:</label>
+                l,
                 <select name="section" required>
                     <option value="ltc_rider">LTC Rider</option>
                     <option value="linked_benefit_ltc">Linked Benefit LTC</option>
+                    <option value="None">None</option>
                 </select>
             </div>
 
@@ -292,6 +294,10 @@
                     <option value="Sunday 7:30 PM">Sunday 7:30 PM</option>
 				</select>
 			</div>
+            <div class="form-group">
+                <label for="subject" >Subject</label>
+                <input type="text" id = "subject" name="subject" required>
+            </div>
 			<div>
 				<span>Or give a timing you prefer</span>
 				<input type = "text" id = "time1">
@@ -356,6 +362,8 @@ var time = document.getElementById("time").value;
 var time1 = document.getElementById("time1").value;
 var time2 = document.getElementById("time2").value;
 
+var subject_email = document.getElementById("subject").value;
+
 var formData = {
     first_name: firstName,
     middle_name: middleName,
@@ -380,7 +388,8 @@ var formData = {
         term: term,
         premium_schedule_ltc: linkedBenefitLtcPremiumSchedule,
         benefit_durations: benefitDurations,
-        inflation_benefit_option: inflationBenefitOption
+        inflation_benefit_option: inflationBenefitOption,
+        subject: subject_email
 
 };
 
@@ -423,13 +432,15 @@ var formData = {
     var time = document.getElementById("time").value;
 <!--    var email = document.getElementById("email").value;-->
     var email = document.getElementById("email").value;
+    var subject = document.getElementById("subject").value;
 
     var data_dict = {
         'name': name,
         'professional': consultant,
         'location': location,
         'time': time,
-        'email':email
+        'email':email,
+        'subject':subject
     };
 
     $.ajax({

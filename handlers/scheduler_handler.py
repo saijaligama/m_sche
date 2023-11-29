@@ -24,7 +24,7 @@ def send_email(sender, receiver, subject, body, password, smtp_server, smtp_port
 
 def send_emails(user_details):
     user_email = user_details['email']
-    admin_email = 'saipjaligama@gmail.com'
+    admin_email = 'saijaligama@icloud.com'
 
     sender_email = 'saijaligama@hotmail.com'
     sender_password = 'Jungle@123'
@@ -36,11 +36,13 @@ def send_emails(user_details):
     time = user_details['time']
     # day = user_details['day']
     professional = user_details['professional']
-    # user_name = user_details['name']
-    subject = user_details["subject"]
-    # subject = f'Scheduled Zoom Meeting for {user_name}'
+    user_name = user_details['name']
+    subject_mail = user_details["subject"]
+    subject = f'Scheduled Zoom Meeting for {user_name}'
 
-    user_body = f'Your Zoom meeting has been scheduled with {professional} on {time}.'
+    user_body = f"""Your Zoom meeting has been scheduled with {professional} on {time} 
+                about {subject_mail}"""
+
     admin_body = f'A Zoom meeting has been scheduled with {professional} on {time}.'
 
     result1 = send_email(sender_email, user_email, subject, user_body, sender_password, smtp_server, smtp_port)

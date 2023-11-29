@@ -157,7 +157,8 @@
             "2. Target",
             "Select a section\n"+
             "1. LTC Rider\n" +
-            "2. Linked Benefit-LTC"
+            "2. Linked Benefit-LTC \n" +
+            "3. Skip"
 
             // Add more questions as needed
         ];
@@ -271,9 +272,9 @@ function handleButtonClick() {
             questions.push(
                 "Premium Schedule?"+ "1. Single \n" + "2. 5-pay \n" + "3. 10-pay \n"
                  + "4. Pay-to-AFS \n",
-                "Benefit Durations?" + "1. 2 years \n" + "2. 3 Years \n" + "3. 4 years \n" +
+                "Benefit Durations?\n " + "1. 2 years \n" + "2. 3 Years \n" + "3. 4 years \n" +
                 "4. 5 Years \n" +"5. 6 Years \n" + "6. 7 Years",
-                "Inflation Benefit Option?"+"1. None \n" +
+                "Inflation Benefit Option? \n"+"1. None \n" +
                 "2. 3 % Simple \n" + "3. 3% Compound \n" +
                 "4. 5% Compound \n",
                 "Would you like to schedule a meeting"
@@ -287,6 +288,7 @@ function handleButtonClick() {
             // Update displayQuestions here
             displayQuestions();
         }
+
         else {
             console.log("Invalid input for LTC section");
             alert('Please enter "1" or "2" for LTC');
