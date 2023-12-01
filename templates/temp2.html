@@ -77,7 +77,7 @@
             color: white;
             padding: 8px;
             border-radius: 5px;
-            text-align: left;
+            text-align: right;
             margin-bottom: 5px;
             width: 70%;
         }
@@ -87,7 +87,7 @@
             color: #5897fb;
             padding: 8px;
             border-radius: 5px;
-            text-align: right;
+            text-align: left;
             margin-bottom: 5px;
             width: 70%;
         }
@@ -133,7 +133,7 @@
             "1. Male \n" +
             "2.Female",
             "What is your email address? ",
-            "What is your date of birth (YYYY-MM-DD)? ",
+            "What is your date of birth \n" + " (YYYY-MM-DD)? ",
             "What is your address? ",
             "What state do you live in? ",
             "What is your risk class?\n" +
@@ -164,7 +164,7 @@
         const responses = {};
         let currentQuestion = 0;
 
-        function displayQuestions() {
+    function displayQuestions() {
         console.log("inside display questions");
     $('#questions').empty(); // Clear previous content
 
@@ -277,7 +277,125 @@ function handleButtonClick() {
             console.log("Invalid input for LTC section");
             alert('Please enter "1" or "2" for LTC');
         }
-    } else if (questions[currentQuestion].includes("Would you like to schedule a meeting")) {
+    }
+
+    else if (questions[currentQuestion].includes("What is your date of birth (YYYY-MM-DD)?")) {
+    // Validate that the user entered a valid date in the format YYYY-MM-DD
+    const dateOfBirthRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dateOfBirthRegex.test(userResponse)) {
+        alert('Please enter a valid date of birth in the format YYYY-MM-DD.');
+        return; // Stop further processing if validation fails
+    }
+
+    responses[`q${currentQuestion}`] = userResponse;
+    currentQuestion++;
+
+    displayQuestions(); // Move displayQuestions here
+}
+
+    else if (questions[currentQuestion].includes("What is your sex")) {
+    // Validate that the user entered either "1" for Male or "2" for Female
+    if (userResponse !== '1' && userResponse !== '2') {
+        alert('Please enter either "1" for Male or "2" for Female.');
+        return; // Stop further processing if validation fails
+    }
+
+    responses[`q${currentQuestion}`] = userResponse;
+    currentQuestion++;
+
+    displayQuestions(); // Move displayQuestions here
+}
+
+else if (questions[currentQuestion].includes("age?")) {
+        // Validate that the user entered a number for the age
+        if (isNaN(userResponse) || userResponse.trim() === '') {
+            alert('Please enter a valid number for your age.');
+            return; // Stop further processing if validation fails
+        }
+
+        // You can add additional checks specific to the age question, such as a valid age range
+
+        responses[`q${currentQuestion}`] = userResponse;
+        currentQuestion++;
+
+        displayQuestions(); // Move displayQuestions here
+    }
+    else if (questions[currentQuestion].includes("name?")) {
+    // Validate that the user entered only letters for the first name
+    const firstNameRegex = /^[a-zA-Z]+$/;
+
+    if (!firstNameRegex.test(userResponse)) {
+        alert('Please enter a valid first name with only letters.');
+        return; // Stop further processing if validation fails
+    }
+
+    responses[`q${currentQuestion}`] = userResponse;
+    currentQuestion++;
+
+    displayQuestions(); // Move displayQuestions here
+}
+
+ else if (questions[currentQuestion].includes("face amount?")) {
+        // Validate that the user entered a number for the age
+        if (isNaN(userResponse) || userResponse.trim() === '') {
+            alert('Please enter a valid number.');
+            return; // Stop further processing if validation fails
+        }
+
+        // You can add additional checks specific to the age question, such as a valid age range
+
+        responses[`q${currentQuestion}`] = userResponse;
+        currentQuestion++;
+
+        displayQuestions(); // Move displayQuestions here
+    }
+
+    else if (questions[currentQuestion].includes("1.")) {
+        // Validate that the user entered a number for the age
+         if (userResponse !== '1' && userResponse !== '2' && userResponse !== '3' && userResponse !== '4' && userResponse !== '5' && userResponse !== '6') {
+        alert('Please chose an option');
+        return; // Stop further processing if validation fails
+    }
+
+        // You can add additional checks specific to the age question, such as a valid age range
+
+        responses[`q${currentQuestion}`] = userResponse;
+        currentQuestion++;
+
+        displayQuestions();
+    }
+
+
+        else if (questions[currentQuestion].includes("phone number?")) {
+        // Validate that the user entered a valid phone number
+        const phoneNumberRegex = /^\d{10}$/; // Simple regex for a 10-digit phone number
+
+        if (!phoneNumberRegex.test(userResponse)) {
+            alert('Please enter a valid 10-digit phone number.');
+            return; // Stop further processing if validation fails
+        }
+
+        responses[`q${currentQuestion}`] = userResponse;
+        currentQuestion++;
+
+        displayQuestions();
+        }
+        else if (questions[currentQuestion].includes("What is your email address?")) {
+    // Validate that the user entered a valid email address
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (!emailRegex.test(userResponse)) {
+        alert('Please enter a valid email address.');
+        return; // Stop further processing if validation fails
+    }
+
+    responses[`q${currentQuestion}`] = userResponse;
+    currentQuestion++;
+
+    displayQuestions(); // Move displayQuestions here
+}
+     else if (questions[currentQuestion].includes("Would you like to schedule a meeting")) {
         console.log("Handling schedule a meeting");
 
         // Check if the user wants to schedule a meeting
@@ -290,7 +408,8 @@ function handleButtonClick() {
             questions.push(
                 "Any Preferred Consultant?",
                 "What Location are you i currently",
-                "What is your preferred Day & time(EST) for the meeting?"
+                "What is your preferred Day & time(EST) for the meeting?",
+                "What is the subject of the meeting"
 
                 // Add more meeting-related questions as needed
             );
@@ -333,6 +452,7 @@ function handleButtonClick() {
             success: function (response) {
                 if (response.redirect) {
                     window.location.href = response.redirect;
+
                 }
                 // Handle success
             },

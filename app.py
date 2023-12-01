@@ -176,7 +176,7 @@ def index():
     conn.close()
 
     print(inserted_record)
-    return "well done"
+    return jsonify({'result':'well done'})
 
 
 @app.route('/download', methods=['GET'])
@@ -214,6 +214,44 @@ def download():
     # Send the file as a response for download
     return send_file(excel_file, as_attachment=True)
 
+# @app.route('/download', methods=['GET','POST'])
+# def download():
+#     if request.method == 'GET':
+#         return "well"
+#     if request.method == 'POST':
+#         id = session['latest_id']
+#         print(id)
+#         # Retrieve all details from the database
+#         conn = sqlite3.connect(DB_NAME)
+#         c = conn.cursor()
+#         c.execute(f'SELECT * FROM {TABLE_NAME} WHERE ID = ?', (id,))
+#         rows = c.fetchall()
+#         conn.close()
+#         print(rows)
+#
+#         # Create a new Excel workbook
+#         workbook = openpyxl.Workbook()
+#         sheet = workbook.active
+#
+#         # Write header row
+#         header = ['ID', 'First Name', 'Middle Name', 'Last Name', 'Phone Number',
+#                   'Email Address', 'Sex', 'Age', 'Date of Birth', 'Address',
+#                   'State', 'Risk Class', 'Face amount', 'Death Benefit Option', 'Premium Mode', 'Section', 'LTC Amount',
+#                   'Maximum Monthly Benefit',
+#                   'Rate', 'Term', 'Premium Schedule', 'Benefit Durations', 'Inflation Benefit Option']
+#         sheet.append(header)
+#
+#         # Write data rows
+#         for row in rows:
+#             sheet.append(row)
+#
+#         # Save the workbook
+#         excel_file = 'details.xlsx'
+#         workbook.save(excel_file)
+#
+#         # Send the file as a response for download
+#         return send_file(excel_file, as_attachment=True)
+
 
 @app.route('/schedule', methods=["GET", "POST"])
 def schedule():
@@ -239,8 +277,8 @@ def schedule():
             send_emails(data)
         except Exception as e:
             print(e)
-
-        return jsonify({'result': data})
+        data2 = {'result':'posrt'}
+        return jsonify(data2)
 
 
 @app.route('/get_details', methods=["GET", "POST"])
@@ -446,7 +484,7 @@ def chatbot():
     }
 
     if request.method == 'GET':
-        return render_template('temp.html')
+        return render_template('chatbot.html')
     else:
         try:
             data = request.json

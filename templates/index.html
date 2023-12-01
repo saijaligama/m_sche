@@ -254,10 +254,10 @@
             </div>
 
             <div class="form-group">
-    <input type="button" value="Submit" onclick="submit_details()">
+    <input type="button" value="Submit" class="button" onclick="submit_details()">
 </div>
         </form>
-        <a href="/download" class="button">Download Data</a>
+        <button onclick="downloadData()" value="Download" class="button">Download Data</button>
 <!--        <input type="button" value="Download Data" class="button" onclick="download_data()">-->
 <!--    <a href = "/schedule">Scheduler</a>-->
         <form >
@@ -317,7 +317,7 @@
 
 
     </div>
-</body>
+
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
@@ -400,8 +400,10 @@ var formData = {
         contentType: "application/json",
         dataType: 'json',
         success: function (data2) {
-        document.getElementById("first_name").value = data2['first_name']
-        id_number = data2['id']
+        document.getElementById("first_name").value = data2['first_name'];
+        id_number = data2['id'];
+        console.log("submission successful")
+        alert('Your data has been stored. Please continue with scheduling a meeting with our professional for a personalized quote');
             return true;
 
         },
@@ -415,10 +417,44 @@ var formData = {
     }
 </script>
 <script>
-<!--    function download_data(){-->
-<!--    -->
-<!--    }-->
+    function downloadData() {
+        var link = document.createElement('a');
+        link.href = '/download';
+        link.className = 'button';
+
+        // Trigger a click on the link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Wait for a short delay before showing the alert
+        setTimeout(function () {
+            alert('File downloaded successfully!');
+        }, 500); // Adjust the delay (in milliseconds) as needed
+    }
 </script>
+<!--<script>-->
+<!--function downloadData() {-->
+
+<!--    var data_dict = {-->
+<!--        'name': 'hi'}-->
+
+
+<!--    $.ajax({-->
+<!--        url: '/download',-->
+<!--        data: JSON.stringify(data_dict),-->
+<!--        type: 'POST',-->
+<!--        contentType: "application/json",-->
+<!--        success: function (data2) {-->
+<!--            return true;-->
+<!--        },-->
+<!--        error: function (data2) {-->
+<!--            console.log(data2);-->
+<!--            return false;-->
+<!--        }-->
+<!--    });-->
+<!--}-->
+<!--</script>-->
 
 
 
@@ -450,6 +486,8 @@ var formData = {
         contentType: "application/json",
         dataType: 'json',
         success: function (data2) {
+                alert('Your meeting has been scheduled with our professional. Please check your email for confirmation');
+
             return true;
         },
         error: function (data2) {
@@ -461,6 +499,5 @@ var formData = {
 
 
 	</script>
+</body>
 </html>
-
-
