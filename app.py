@@ -540,7 +540,14 @@ def chatbot():
                             "30-Year" if data['q18'] == '4' else \
                                 "Permanent"
                 if 'q23' in data:
-                    form_data['subject'] = data['q23']
+                    data['q23'] = "Term" if data['q23'] == '1' else \
+                    "Perm" if data['q23'] == '2' else \
+                    "Auto/Home Insurance" if data['q23'] == '3' else \
+                    "LTC" if data['q23'] == '4' else \
+                    "enter interested topic"
+
+                    form_data['subject'] == data['q23']
+
                 else:
                     form_data['subject'] = ''
 
@@ -611,10 +618,15 @@ def chatbot():
                     "3% Simple" if data['q17'] == '2' else \
                         "3% Compound" if data['q17'] == '3' else \
                             "5% Compound"
+
                 if 'q22' in data:
-                    form_data['subject'] =data['q22']
-                else:
-                    form_data['subject'] = ''
+                    data['q22'] = "Term" if data['q22'] == '1' else \
+                        "Perm" if data['q22'] == '2' else \
+                        "Auto/Home Insurance" if data['q22'] == '3' else \
+                       "LTC" if data['q22'] == '4' else \
+                        "enter interested topic"
+                    form_data['subject'] == data['q22']
+
 
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
@@ -714,9 +726,11 @@ def chatbot():
                 inserted_id = c.lastrowid
                 conn.close()
                 if 'q18' in data:
-                    form_data['subject'] =data['q18']
-                else:
-                    form_data['subject'] = ''
+                    form_data['subject'] = "Term" if data['q18'] == '1' else \
+                        "Perm" if data['q18'] == '2' else \
+                        "Auto/Home Insurance" if data['q18'] == '3' else \
+                        "LTC" if data['q18'] == '4' else \
+                        "enter interested topic"
                 if data['q15'] == 'yes':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],

@@ -164,6 +164,18 @@
         const responses = {};
         let currentQuestion = 0;
 
+        let timer;
+
+        function startTimer() {
+            // Clear any existing timers
+            clearTimeout(timer);
+
+            // Set a new timer for 30 seconds
+            timer = setTimeout(function () {
+                alert('Are you still there?'); // Display alert after 30 seconds
+            }, 30000); // 30 seconds in milliseconds
+        }
+
     function displayQuestions() {
         console.log("inside display questions");
     $('#questions').empty(); // Clear previous content
@@ -190,6 +202,8 @@
                 ${formattedResponse ? `<div class="response">${formattedResponse}</div>` : ''}
             </div>
         `);
+        startTimer();
+        $('#userResponse').val('');
     }
 }
 
@@ -406,10 +420,12 @@ else if (questions[currentQuestion].includes("age?")) {
 
             // Ask additional questions
             questions.push(
-                "Any Preferred Consultant?",
-                "What Location are you i currently",
+                "Would you prefer a consultant(enter name if known else enter none)",
+                "Location (fill address or enter online)",
                 "What is your preferred Day & time(EST) for the meeting?",
-                "What is the subject of the meeting"
+                "What is the subject of the meeting \n" +
+                "1. Term \n" + "2. Perm \n" + "3. Auto/Home Insurance \n" +
+                "4. LTC \n" + "5 Or Please enter your interested topic."
 
                 // Add more meeting-related questions as needed
             );

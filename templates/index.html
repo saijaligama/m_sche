@@ -269,12 +269,12 @@
 <!--            </div>-->
 
             <div class="form-group">
-                <label for="consultant" >Consultant</label>
+                <label for="consultant" >Would you prefer a consultant(enter name if known else enter none)</label>
                 <input type="text" name="consultant" id = "consultant">
             </div>
 
             <div class="form-group">
-                <label for="location" >Location</label>
+                <label for="location" >Location (fill address or enter online)</label>
                 <input type="text" id = "location" name="location" required>
             </div>
 <!--             <div class="form-group">-->
@@ -285,18 +285,26 @@
             <div class="form-group">
 				<label for="time" >Time</label>
 				<select name="time" id="time" required>
-				<option value="Monday 7:30 PM">Monday 7:30 PM</option>
-                    <option value="Tuesday 7:30 PM">Tuesday 7:30 PM</option>
-                    <option value="Wednesday 7:30 PM">Wednesday 7:30 PM</option>
-                    <option value="Saturday 10:00 AM">Saturday 10:00 AM</option>
-                    <option value="Saturday 2:00 PM">Saturday 2:00 PM</option>
-                    <option value="Saturday 7:30 PM">Saturday 7:30 PM</option>
-                    <option value="Sunday 7:30 PM">Sunday 7:30 PM</option>
+				<option value="Monday 7:30 PM">Coming Monday 7:30 PM</option>
+                    <option value="Tuesday 7:30 PM">Coming Tuesday 7:30 PM</option>
+                    <option value="Wednesday 7:30 PM">Coming Wednesday 7:30 PM</option>
+                    <option value="Saturday 10:00 AM">Coming Saturday 10:00 AM</option>
+                    <option value="Saturday 2:00 PM">Coming Saturday 2:00 PM</option>
+                    <option value="Saturday 7:30 PM">Coming Saturday 7:30 PM</option>
+                    <option value="Sunday 7:30 PM">Coming Sunday 7:30 PM</option>
 				</select>
 			</div>
             <div class="form-group">
                 <label for="subject" >Subject</label>
-                <input type="text" id = "subject" name="subject" required>
+                <select name="subject" id ="subject" required>
+                    <option value="Term">Term</option>
+                    <option value="Perm">Perm</option>
+                    <option value="Auto/home insurance">Auto/home insurance</option>
+                    <option value="LTC">LTC</option>
+                    <option value="topic">Or Enter topic</option>
+<!--                    <option value="Standard Tobacco">Standard Tobacco</option>-->
+                </select>
+
             </div>
 			<div>
 				<span>Or give a timing you prefer</span>
@@ -361,8 +369,9 @@ var location = document.getElementById("location").value;
 var time = document.getElementById("time").value;
 var time1 = document.getElementById("time1").value;
 var time2 = document.getElementById("time2").value;
-
 var subject_email = document.getElementById("subject").value;
+
+<!--var subject_email = document.getElementById("subject").value;-->
 
 var formData = {
     first_name: firstName,
