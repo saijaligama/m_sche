@@ -135,7 +135,7 @@
             "What is your email address? ",
             "What is your date of birth \n" + " (YYYY-MM-DD)? ",
             "What is your address? ",
-            "What state do you live in? ",
+            "What state do you live in? \n" + "(AL,NC)",
             "What is your risk class?\n" +
             "1. Preferred Plus Non Tobacco,\n" +
             "2. Preferred Non Tobacco,\n" +
@@ -153,7 +153,7 @@
             "What premium schedule (maximum/target)? \n"+
             "1. Maximum \n" +
             "2. Target",
-            "Select a section\n"+
+            "Select LTC Option \n"+
             "1. LTC Rider\n" +
             "2. Linked Benefit-LTC \n"+
             "3. None"
@@ -201,7 +201,7 @@ function handleButtonClick() {
     const userResponse = $(`#userResponse`).val();
     console.log("Handling button click:", userResponse);
 
-    if (questions[currentQuestion].includes("Select a section\n" +
+    if (questions[currentQuestion].includes("Select LTC Option \n" +
         "1. LTC Rider\n" +
         "2. Linked Benefit-LTC")) {
         console.log("Handling LTC section");
@@ -221,7 +221,7 @@ function handleButtonClick() {
                 "3. Preferred Non Tobacco \n" + "4. Tobacco",
                 "Term?\n" + "1. 10-Year \n" + "2. 15-Year \n" + "3. 20-Year \n" +
                 "4. 30-Year \n" + "5. Permanent",
-                "Would you like to schedule a meeting"
+                "Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No"
                 // Add more meeting-related questions as needed
             );
 
@@ -243,7 +243,7 @@ function handleButtonClick() {
                 "Inflation Benefit Option?"+"1. None \n" +
                 "2. 3 % Simple \n" + "3. 3% Compound \n" +
                 "4. 5% Compound \n",
-                "Would you like to schedule a meeting"
+                "Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No"
 
                 // Add more meeting-related questions as needed
             );
@@ -262,7 +262,7 @@ function handleButtonClick() {
             currentQuestion++;
 
             questions.push(
-                "Would you like to schedule a meeting"
+                "Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No"
 
                 // Add more meeting-related questions as needed
             );
@@ -275,7 +275,7 @@ function handleButtonClick() {
         }
         else {
             console.log("Invalid input for LTC section");
-            alert('Please enter "1" or "2" for LTC');
+            alert('Please enter "1", "2" or "3" for LTC');
         }
     }
 
@@ -395,11 +395,11 @@ else if (questions[currentQuestion].includes("age?")) {
 
     displayQuestions(); // Move displayQuestions here
 }
-     else if (questions[currentQuestion].includes("Would you like to schedule a meeting")) {
+     else if (questions[currentQuestion].includes("Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No")) {
         console.log("Handling schedule a meeting");
 
         // Check if the user wants to schedule a meeting
-        if (userResponse.toLowerCase() === 'yes') {
+        if (userResponse.toLowerCase() === '1') {
             console.log("User wants to schedule a meeting");
             responses[`q${currentQuestion}`] = userResponse;
             currentQuestion++;
@@ -415,7 +415,7 @@ else if (questions[currentQuestion].includes("age?")) {
             );
 
             displayQuestions(); // Move displayQuestions here
-        } else if (userResponse.toLowerCase() === 'no') {
+        } else if (userResponse.toLowerCase() === '2') {
             console.log("User does not want to schedule a meeting");
             // If the user doesn't want to schedule a meeting, stop the process
             responses[`q${currentQuestion}`] = userResponse;

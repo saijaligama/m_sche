@@ -7,6 +7,7 @@ from services import admin_login_service, admin_data_service
 from services import chatbot_service
 import sqlite3
 import requests
+from datetime import datetime
 
 # def delete_table(database, table_name):
 #     try:
@@ -47,7 +48,7 @@ app.register_blueprint(chatbot_service.chatbot_bp)
 
 # Database configuration
 DB_NAME = 'details2.db'
-TABLE_NAME = 'details2'
+TABLE_NAME = 'details3'
 
 
 def create_tables():
@@ -81,7 +82,8 @@ def create_tables():
                     inflation_benefit_option TEXT,
                     consultant TEXT,  
                     location TEXT,    
-                    time TEXT         
+                    time TEXT,
+                    enter_date TEXT
                     )''')
 
     conn.commit()
@@ -118,7 +120,8 @@ def index():
         'location': '',
         'date': '',
         'time': '',
-        'date_time': ''
+        'date_time': '',
+        'enter_date':''
     }
     inserted_data = {}
 
@@ -126,6 +129,7 @@ def index():
         return render_template('index.html')
 
     if request.method == 'POST':
+        current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = request.json
         print("data", data)
         # for key, value in data.items():
@@ -146,8 +150,8 @@ def index():
             state, risk_class, face_amount, death_benefit_option, premium_mode,
             section, ltc_amount, maximum_monthly_benefit,
             rate, term, premium_schedule, benefit_durations,
-            inflation_benefit_option
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            inflation_benefit_option,enter_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
               (
                   form_data['first_name'], form_data['middle_name'], form_data['last_name'],
                   form_data['phone_number'],
@@ -157,7 +161,8 @@ def index():
                   form_data['death_benefit_option'], form_data['premium_mode'],
                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                   form_data['rate'], form_data['term'], form_data['premium_schedule'],
-                  form_data['benefit_durations'], form_data['inflation_benefit_option']
+                  form_data['benefit_durations'], form_data['inflation_benefit_option'],
+                  str(current_timestamp)
               )
               )
     conn.commit()
@@ -167,7 +172,7 @@ def index():
     session['latest_id'] = inserted_id
 
     # Query the inserted data using the ID
-    c.execute('SELECT * FROM details WHERE id = ?', (inserted_id,))
+    c.execute(f'SELECT * FROM {TABLE_NAME} WHERE id = ?', (inserted_id,))
     column_names = [description[0] for description in c.description]
     inserted_record = c.fetchone()
     print(inserted_id)
@@ -281,27 +286,27 @@ def schedule():
         return jsonify(data2)
 
 
-@app.route('/get_details', methods=["GET", "POST"])
-def get_details():
-    if request.method == 'POST':
-        data = request.json
-        id = data['id']
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM table WHERE id=?", (id,))
-        result = c.fetchone()
-
-        conn.close()
-
-        if result:
-            return jsonify({
-                'result': result
-            })
-        else:
-            return jsonify({
-                'error': 'No matching ID'
-            })
+# @app.route('/get_details', methods=["GET", "POST"])
+# def get_details():
+#     if request.method == 'POST':
+#         data = request.json
+#         id = data['id']
+#         conn = sqlite3.connect(DB_NAME)
+#         c = conn.cursor()
+#
+#         c.execute("SELECT * FROM table WHERE id=?", (id,))
+#         result = c.fetchone()
+#
+#         conn.close()
+#
+#         if result:
+#             return jsonify({
+#                 'result': result
+#             })
+#         else:
+#             return jsonify({
+#                 'error': 'No matching ID'
+#             })
 
 
 @app.route('/get_data_by_id')
@@ -372,7 +377,7 @@ def get_data_by_id():
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
 
-        c.execute("SELECT * FROM details WHERE id=?", (item_id,))
+        c.execute(f"SELECT * FROM {TABLE_NAME} WHERE id=?", (item_id,))
         result = c.fetchone()
 
         # c.execute('''INSERT INTO details (
@@ -484,9 +489,10 @@ def chatbot():
     }
 
     if request.method == 'GET':
-        return render_template('chatbot.html')
+        return render_template('temp.html')
     else:
         try:
+            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data = request.json
             print("inside data")
             print(data)
@@ -542,15 +548,15 @@ def chatbot():
                     form_data[i] = data[j]
 
                 try:
-                    c.execute('''
-                            INSERT INTO details2 (
+                    c.execute(f'''
+                            INSERT INTO {TABLE_NAME} (
                                 first_name, last_name, phone_number,
                                 email_address, sex, age, date_of_birth, address,
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, ltc_amount, maximum_monthly_benefit,
-                                rate, term,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                                rate, term,consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -562,7 +568,8 @@ def chatbot():
                                   form_data['premium_schedule'],
                                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                                   form_data['rate'], form_data['term'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
@@ -613,15 +620,15 @@ def chatbot():
                     form_data[i] = data[j]
 
                 try:
-                    c.execute('''
-                            INSERT INTO details2 (
+                    c.execute(f'''
+                            INSERT INTO {TABLE_NAME} (
                                 first_name, last_name, phone_number,
                                 email_address, sex, age, date_of_birth, address,
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, premium_schedule_ltc, benefit_durations,
-                                inflation_benefit_option,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                                inflation_benefit_option,consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -634,7 +641,8 @@ def chatbot():
                                   form_data['section'], form_data['premium_schedule_ltc'],
                                   form_data['benefit_durations'],
                                   form_data['inflation_benefit_option'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
@@ -672,15 +680,15 @@ def chatbot():
                     form_data[i] = data[j]
                 print(form_data)
                 try:
-                    c.execute('''
-                            INSERT INTO details2 (
+                    c.execute(f'''
+                            INSERT INTO {TABLE_NAME} (
                                 first_name, last_name, phone_number,
                                 email_address, sex, age, date_of_birth, address,
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section,
-                                consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?)''',
+                                consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -691,7 +699,8 @@ def chatbot():
                                   form_data['death_benefit_option'], form_data['premium_mode'],
                                   form_data['premium_schedule'],
                                   form_data['section'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
