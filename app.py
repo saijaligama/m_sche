@@ -48,7 +48,7 @@ app.register_blueprint(chatbot_service.chatbot_bp)
 
 # Database configuration
 DB_NAME = 'details2.db'
-TABLE_NAME = 'details3'
+TABLE_NAME = 'details4'
 
 
 def create_tables():
@@ -83,7 +83,8 @@ def create_tables():
                     consultant TEXT,  
                     location TEXT,    
                     time TEXT,
-                    enter_date TEXT
+                    enter_date TEXT,
+                    subject TEXT
                     )''')
 
     conn.commit()
@@ -121,7 +122,8 @@ def index():
         'date': '',
         'time': '',
         'date_time': '',
-        'enter_date':''
+        'enter_date':'',
+        'subject':''
     }
     inserted_data = {}
 
@@ -150,8 +152,8 @@ def index():
             state, risk_class, face_amount, death_benefit_option, premium_mode,
             section, ltc_amount, maximum_monthly_benefit,
             rate, term, premium_schedule, benefit_durations,
-            inflation_benefit_option,enter_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
+            inflation_benefit_option,enter_date,subject
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)''',
               (
                   form_data['first_name'], form_data['middle_name'], form_data['last_name'],
                   form_data['phone_number'],
@@ -162,7 +164,7 @@ def index():
                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                   form_data['rate'], form_data['term'], form_data['premium_schedule'],
                   form_data['benefit_durations'], form_data['inflation_benefit_option'],
-                  str(current_timestamp)
+                  str(current_timestamp),form_data['subject']
               )
               )
     conn.commit()
@@ -265,6 +267,7 @@ def schedule():
     if request.method == 'POST':
 
         data = request.json
+        print("schedule data",data)
 
         if 'id' in data:
             id = data['id']
@@ -275,8 +278,16 @@ def schedule():
         c = conn.cursor()
 
         try:
-            c.execute((
-                          f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}" WHERE id = {id} ;'''))
+            # c.execute((
+            #               f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", location="{data['location']}", time="{data['time']}, subject="{data['subject']}" WHERE id = {id} ;'''))
+            # conn.commit()
+            c.execute(
+                f'''UPDATE {TABLE_NAME} SET consultant="{data['professional']}", 
+                                             location="{data['location']}", 
+                                             time="{data['time']}", 
+                                             subject="{data['subject']}" 
+                   WHERE id = {id};'''
+            )
             conn.commit()
 
             send_emails(data)
@@ -440,7 +451,8 @@ def chatbot():
         'meeting': '',
         'consultant': 'None',
         'location': 'None',
-        'time': 'None'
+        'time': 'None',
+        'subject':''
     }
     form_data_section_2 = {
         'first_name': '',
@@ -464,7 +476,8 @@ def chatbot():
         'meeting': '',
         'consultant': 'None',
         'location': 'None',
-        'time': 'None'
+        'time': 'None',
+        'subject':''
     }
     form_data_section_3 = {
         'first_name': '',
@@ -485,7 +498,8 @@ def chatbot():
         'meeting': '',
         'consultant': 'None',
         'location': 'None',
-        'time': 'None'
+        'time': 'None',
+        'subject':''
     }
 
     if request.method == 'GET':
@@ -562,8 +576,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, ltc_amount, maximum_monthly_benefit,
-                                rate, term,consultant,location,time,enter_date
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
+                                rate, term,consultant,location,time,enter_date,subject
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -576,7 +590,7 @@ def chatbot():
                                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                                   form_data['rate'], form_data['term'],
                                   form_data['consultant'], form_data['location'], form_data['time'],
-                                  current_timestamp
+                                  current_timestamp,form_data['subject']
                               )
                               )
                 except Exception as e:
@@ -589,7 +603,7 @@ def chatbot():
                 print("-------------------------------> ")
                 inserted_id = c.lastrowid
                 conn.close()
-                if data['q19'] == 'yes':
+                if data['q19'] == '1':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],
                              'time': form_data['time'],
@@ -639,8 +653,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, premium_schedule_ltc, benefit_durations,
-                                inflation_benefit_option,consultant,location,time,enter_date
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
+                                inflation_benefit_option,consultant,location,time,enter_date,subject
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -654,7 +668,7 @@ def chatbot():
                                   form_data['benefit_durations'],
                                   form_data['inflation_benefit_option'],
                                   form_data['consultant'], form_data['location'], form_data['time'],
-                                  current_timestamp
+                                  current_timestamp,form_data['subject']
                               )
                               )
                 except Exception as e:
@@ -667,7 +681,7 @@ def chatbot():
                 print("-------------------------------> ")
                 inserted_id = c.lastrowid
                 conn.close()
-                if data['q18'] == 'yes':
+                if data['q18'] == '1':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],
                              'time': form_data['time'],
@@ -699,8 +713,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section,
-                                consultant,location,time,enter_date
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?,?)''',
+                                consultant,location,time,enter_date,subject
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -712,7 +726,7 @@ def chatbot():
                                   form_data['premium_schedule'],
                                   form_data['section'],
                                   form_data['consultant'], form_data['location'], form_data['time'],
-                                  current_timestamp
+                                  current_timestamp,form_data['subject']
                               )
                               )
                 except Exception as e:
@@ -725,13 +739,13 @@ def chatbot():
                 print("-------------------------------> ")
                 inserted_id = c.lastrowid
                 conn.close()
-                if 'q18' in data:
-                    form_data['subject'] = "Term" if data['q18'] == '1' else \
-                        "Perm" if data['q18'] == '2' else \
-                        "Auto/Home Insurance" if data['q18'] == '3' else \
-                        "LTC" if data['q18'] == '4' else \
+                if 'q19' in data:
+                    form_data['subject'] = "Term" if data['q19'] == '1' else \
+                        "Perm" if data['q19'] == '2' else \
+                        "Auto/Home Insurance" if data['q19'] == '3' else \
+                        "LTC" if data['q19'] == '4' else \
                         "enter interested topic"
-                if data['q15'] == 'yes':
+                if data['q15'] == '1':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],
                              'time': form_data['time'],

@@ -307,9 +307,9 @@
 
             </div>
 			<div>
-				<span>Or give a timing you prefer</span>
-				<input type = "text" id = "time1">
-				<input type = "text" id = "time2">
+				<span>Any other Subject you would like to discuss</span>
+				<input type = "text" id = "subject_1">
+
 			</div>
 
 			<div>
@@ -367,9 +367,18 @@ var inflationBenefitOption = document.getElementsByName("inflation_benefit_optio
 var consultant = document.getElementById("consultant").value;
 var location = document.getElementById("location").value;
 var time = document.getElementById("time").value;
-var time1 = document.getElementById("time1").value;
-var time2 = document.getElementById("time2").value;
+<!--var time1 = document.getElementById("time1").value;-->
+<!--var time2 = document.getElementById("time2").value;-->
 var subject_email = document.getElementById("subject").value;
+
+var subject2 = document.getElementById("subject_1").value;
+
+if (subject2.trim() !== "") {
+  // If not empty, assign it to another variable
+  subject_email = subject2;
+  console.log("subject2 is not empty:", subject2);
+}
+
 
 <!--var subject_email = document.getElementById("subject").value;-->
 
@@ -409,7 +418,7 @@ var formData = {
         contentType: "application/json",
         dataType: 'json',
         success: function (data2) {
-        document.getElementById("first_name").value = data2['first_name'];
+        //document.getElementById("first_name").value = data2['first_name'];
         id_number = data2['id'];
         console.log("submission successful")
         alert('Your data has been stored. Please continue with scheduling a meeting with our professional for a personalized quote');
@@ -477,7 +486,15 @@ var formData = {
     var time = document.getElementById("time").value;
 <!--    var email = document.getElementById("email").value;-->
     var email = document.getElementById("email").value;
-    var subject = document.getElementById("subject").value;
+    var subject_email = document.getElementById("subject").value;
+
+var subject2 = document.getElementById("subject_1").value;
+
+if (subject2.trim() !== "") {
+  // If not empty, assign it to another variable
+  subject_email = subject2;
+  console.log("subject2 is not empty:", subject2);
+}
 
     var data_dict = {
         'name': name,
@@ -485,7 +502,7 @@ var formData = {
         'location': location,
         'time': time,
         'email':email,
-        'subject':subject
+        'subject':subject_email
     };
 
     $.ajax({

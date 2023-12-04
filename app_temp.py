@@ -48,7 +48,7 @@ app.register_blueprint(chatbot_service.chatbot_bp)
 
 # Database configuration
 DB_NAME = 'details2.db'
-TABLE_NAME = 'details3'
+TABLE_NAME = 'details4'
 
 
 def create_tables():
@@ -83,7 +83,8 @@ def create_tables():
                     consultant TEXT,  
                     location TEXT,    
                     time TEXT,
-                    enter_date TEXT
+                    enter_date TEXT,
+                    subject TEXT
                     )''')
 
     conn.commit()
@@ -121,7 +122,8 @@ def index():
         'date': '',
         'time': '',
         'date_time': '',
-        'enter_date':''
+        'enter_date':'',
+        'subject':''
     }
     inserted_data = {}
 
@@ -129,6 +131,7 @@ def index():
         return render_template('index.html')
 
     if request.method == 'POST':
+        current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = request.json
         print("data", data)
         # for key, value in data.items():
@@ -149,8 +152,8 @@ def index():
             state, risk_class, face_amount, death_benefit_option, premium_mode,
             section, ltc_amount, maximum_monthly_benefit,
             rate, term, premium_schedule, benefit_durations,
-            inflation_benefit_option
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            inflation_benefit_option,enter_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)''',
               (
                   form_data['first_name'], form_data['middle_name'], form_data['last_name'],
                   form_data['phone_number'],
@@ -160,7 +163,8 @@ def index():
                   form_data['death_benefit_option'], form_data['premium_mode'],
                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                   form_data['rate'], form_data['term'], form_data['premium_schedule'],
-                  form_data['benefit_durations'], form_data['inflation_benefit_option']
+                  form_data['benefit_durations'], form_data['inflation_benefit_option'],
+                  str(current_timestamp)
               )
               )
     conn.commit()
@@ -284,27 +288,27 @@ def schedule():
         return jsonify(data2)
 
 
-@app.route('/get_details', methods=["GET", "POST"])
-def get_details():
-    if request.method == 'POST':
-        data = request.json
-        id = data['id']
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM table WHERE id=?", (id,))
-        result = c.fetchone()
-
-        conn.close()
-
-        if result:
-            return jsonify({
-                'result': result
-            })
-        else:
-            return jsonify({
-                'error': 'No matching ID'
-            })
+# @app.route('/get_details', methods=["GET", "POST"])
+# def get_details():
+#     if request.method == 'POST':
+#         data = request.json
+#         id = data['id']
+#         conn = sqlite3.connect(DB_NAME)
+#         c = conn.cursor()
+#
+#         c.execute("SELECT * FROM table WHERE id=?", (id,))
+#         result = c.fetchone()
+#
+#         conn.close()
+#
+#         if result:
+#             return jsonify({
+#                 'result': result
+#             })
+#         else:
+#             return jsonify({
+#                 'error': 'No matching ID'
+#             })
 
 
 @app.route('/get_data_by_id')
@@ -487,9 +491,10 @@ def chatbot():
     }
 
     if request.method == 'GET':
-        return render_template('chatbot.html')
+        return render_template('temp.html')
     else:
         try:
+            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data = request.json
             print("inside data")
             print(data)
@@ -537,7 +542,14 @@ def chatbot():
                             "30-Year" if data['q18'] == '4' else \
                                 "Permanent"
                 if 'q23' in data:
-                    form_data['subject'] = data['q23']
+                    data['q23'] = "Term" if data['q23'] == '1' else \
+                    "Perm" if data['q23'] == '2' else \
+                    "Auto/Home Insurance" if data['q23'] == '3' else \
+                    "LTC" if data['q23'] == '4' else \
+                    "enter interested topic"
+
+                    form_data['subject'] == data['q23']
+
                 else:
                     form_data['subject'] = ''
 
@@ -552,8 +564,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, ltc_amount, maximum_monthly_benefit,
-                                rate, term,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                                rate, term,consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -565,7 +577,8 @@ def chatbot():
                                   form_data['premium_schedule'],
                                   form_data['section'], form_data['ltc_amount'], form_data['maximum_monthly_benefit'],
                                   form_data['rate'], form_data['term'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
@@ -607,10 +620,15 @@ def chatbot():
                     "3% Simple" if data['q17'] == '2' else \
                         "3% Compound" if data['q17'] == '3' else \
                             "5% Compound"
+
                 if 'q22' in data:
-                    form_data['subject'] =data['q22']
-                else:
-                    form_data['subject'] = ''
+                    data['q22'] = "Term" if data['q22'] == '1' else \
+                        "Perm" if data['q22'] == '2' else \
+                        "Auto/Home Insurance" if data['q22'] == '3' else \
+                       "LTC" if data['q22'] == '4' else \
+                        "enter interested topic"
+                    form_data['subject'] == data['q22']
+
 
                 for i, j in zip(form_data, data):
                     form_data[i] = data[j]
@@ -623,8 +641,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section, premium_schedule_ltc, benefit_durations,
-                                inflation_benefit_option,consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?)''',
+                                inflation_benefit_option,consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -637,7 +655,8 @@ def chatbot():
                                   form_data['section'], form_data['premium_schedule_ltc'],
                                   form_data['benefit_durations'],
                                   form_data['inflation_benefit_option'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
@@ -682,8 +701,8 @@ def chatbot():
                                 state, risk_class, face_amount, death_benefit_option, premium_mode,
                                  premium_schedule,
                                 section,
-                                consultant,location,time
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?)''',
+                                consultant,location,time,enter_date
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?,?,?,?,?)''',
                               (
                                   form_data['first_name'], form_data['last_name'],
                                   form_data['phone_number'],
@@ -694,7 +713,8 @@ def chatbot():
                                   form_data['death_benefit_option'], form_data['premium_mode'],
                                   form_data['premium_schedule'],
                                   form_data['section'],
-                                  form_data['consultant'], form_data['location'], form_data['time']
+                                  form_data['consultant'], form_data['location'], form_data['time'],
+                                  current_timestamp
                               )
                               )
                 except Exception as e:
@@ -708,9 +728,11 @@ def chatbot():
                 inserted_id = c.lastrowid
                 conn.close()
                 if 'q18' in data:
-                    form_data['subject'] =data['q18']
-                else:
-                    form_data['subject'] = ''
+                    form_data['subject'] = "Term" if data['q18'] == '1' else \
+                        "Perm" if data['q18'] == '2' else \
+                        "Auto/Home Insurance" if data['q18'] == '3' else \
+                        "LTC" if data['q18'] == '4' else \
+                        "enter interested topic"
                 if data['q15'] == 'yes':
                     data1 = {'professional': form_data['consultant'],
                              'location': form_data['location'],

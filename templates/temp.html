@@ -125,16 +125,17 @@
 <script>
     function startChatbot() {
         const questions = [
-            "What is your first name?",
+            "Thanks for your interest in a quote, which is definitely a good move. Let's start... What's your first name?",
             "What is your last name?",
-            "What is your age?",
-            "What is your phone number?",
+            "Next about age. You know the quote quality is related to accurate info like age. What's your age?",
+            "Could you give your phone number to us so that we better serve you? We will not share it and any other info you give here to any one without your written permission. \n" +
+            "The phone number should be 10 digits without any other letters",
             "What is your sex \n" +
             "1. Male \n" +
             "2.Female",
             "What is your email address? ",
             "What is your date of birth \n" + " (YYYY-MM-DD)? ",
-            "What is your address? ",
+            "Your address is required if you request a car/home insurance quote. We have more than 20 providers who can give you competitive quotes. What's your address? ",
             "What state do you live in? \n" + "(AL,NC)",
             "What is your risk class?\n" +
             "1. Preferred Plus Non Tobacco,\n" +
@@ -142,17 +143,19 @@
             "3. Standard Plus Non Tobacco,\n" +
             "4. Standard Non Tobacco,\n" +
             "5. Preferred Tobacco,\n" +
-            "6. Standard Tobacco",
-            "What is the desired face amount? ",
+            "6. Standard Tobacco \n" + "1. is best",
+            "Next how much life insurance or LTC you need? Hm... Good question. Rule of thumb amount is 10 times of your income. More accurate estimate is DIME rule. Contact us for more details. What's the desired face amount? ",
             "What death benefit option (level/increasing)? \n" +
             "1.Level \n" +
             "2. Increasing",
             "What premium mode (monthly/annual)? \n"+
             "1.Monthly \n"+
             "2. Annual",
+            "Now let's go to the funding part: how much money is invested in the policy where your extra cash is invested and increased tax deferred and tax free after the deduction of the insurance costs. Target is a suitable amount you can afford. If you mainly use the policy to accumulate your wealth tax free and mask risk free and maximize its benefits, you certainly choose \n" +
             "What premium schedule (maximum/target)? \n"+
             "1. Maximum \n" +
             "2. Target",
+            "Next is one of the most important issue called long term care (LTC) which takes care of your costs when two of the six standard ADLs are generally recognized as bathing, dressing, toileting, transferring (getting in and out of bed or chair), eating, and continence. The cost is about $7000-$12000 a month now. Many states are considering the LTC tax from payroll now. One of the best solutions is to add a LTC rider to the policy or buy LTC index-linked policy. You are certainly encouraged to schedule a time to discuss it with our experts. \n"+
             "Select LTC Option \n"+
             "1. LTC Rider\n" +
             "2. Linked Benefit-LTC \n"+
@@ -229,11 +232,11 @@ function handleButtonClick() {
 
             // Ask additional questions
             questions.push(
-                "Amount?\n" + "Default Amount is the same s Face amount",
-                "Maximum Monthly Benefit? \n" + "1. 2% \n" + "2. 3% \n" + "3. 4% \n",
-                "Rate? \n" + "1. Preferred Tobacco \n" + "2. Tobacco" +
+                "Amount?\n" + "Like the life underwriting, the LTC needs also your health info. The rate you think for you?",
+                "Maximum monthly benefit payment as a percentage of the total amount? \n" + "1. 2% \n" + "2. 3% \n" + "3. 4% \n",
+                "Rate? \n" + "1. Preferred Tobacco \n" + "2. Tobacco \n" +
                 "3. Preferred Non Tobacco \n" + "4. Tobacco",
-                "Term?\n" + "1. 10-Year \n" + "2. 15-Year \n" + "3. 20-Year \n" +
+                "If currently your income is moderate, the most affordable protection is term life insurance where the protection is only for the specified terms without cash accumulation. Which term you like? \n" + "1. 10-Year \n" + "2. 15-Year \n" + "3. 20-Year \n" +
                 "4. 30-Year \n" + "5. Permanent",
                 "Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No"
                 // Add more meeting-related questions as needed
@@ -290,6 +293,41 @@ function handleButtonClick() {
         else {
             console.log("Invalid input for LTC section");
             alert('Please enter "1", "2" or "3" for LTC');
+        }
+    }
+    else if (questions[currentQuestion].includes("Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No")) {
+        console.log("Handling schedule a meeting");
+
+        // Check if the user wants to schedule a meeting
+        if (userResponse.toLowerCase() === '1') {
+            console.log("User wants to schedule a meeting");
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
+            // Ask additional questions
+            questions.push(
+                "Would you prefer a consultant(enter name if known else enter none)",
+                "Location (fill address or enter online)",
+                "What is your preferred Day & time(EST) for the meeting?",
+                "What is the subject of the meeting \n" +
+                "1. Term \n" + "2. Perm \n" + "3. Auto/Home Insurance \n" +
+                "4. LTC \n" + "5 Or Please enter your interested topic."
+
+                // Add more meeting-related questions as needed
+            );
+
+            displayQuestions(); // Move displayQuestions here
+        } else if (userResponse.toLowerCase() === '2') {
+            console.log("User does not want to schedule a meeting");
+            // If the user doesn't want to schedule a meeting, stop the process
+            responses[`q${currentQuestion}`] = userResponse;
+            currentQuestion++;
+
+
+            displayQuestions(); // Move displayQuestions here
+        } else {
+            console.log("Invalid input for scheduling a meeting");
+            alert('Please enter "yes" or "no" for scheduling a meeting.');
         }
     }
 
@@ -408,42 +446,7 @@ else if (questions[currentQuestion].includes("age?")) {
     currentQuestion++;
 
     displayQuestions(); // Move displayQuestions here
-}
-     else if (questions[currentQuestion].includes("Would you like to schedule a meeting \n" + "1. Yes \n" + "2. No")) {
-        console.log("Handling schedule a meeting");
-
-        // Check if the user wants to schedule a meeting
-        if (userResponse.toLowerCase() === '1') {
-            console.log("User wants to schedule a meeting");
-            responses[`q${currentQuestion}`] = userResponse;
-            currentQuestion++;
-
-            // Ask additional questions
-            questions.push(
-                "Would you prefer a consultant(enter name if known else enter none)",
-                "Location (fill address or enter online)",
-                "What is your preferred Day & time(EST) for the meeting?",
-                "What is the subject of the meeting \n" +
-                "1. Term \n" + "2. Perm \n" + "3. Auto/Home Insurance \n" +
-                "4. LTC \n" + "5 Or Please enter your interested topic."
-
-                // Add more meeting-related questions as needed
-            );
-
-            displayQuestions(); // Move displayQuestions here
-        } else if (userResponse.toLowerCase() === '2') {
-            console.log("User does not want to schedule a meeting");
-            // If the user doesn't want to schedule a meeting, stop the process
-            responses[`q${currentQuestion}`] = userResponse;
-            currentQuestion++;
-
-
-            displayQuestions(); // Move displayQuestions here
-        } else {
-            console.log("Invalid input for scheduling a meeting");
-            alert('Please enter "yes" or "no" for scheduling a meeting.');
-        }
-    } else {
+} else {
         console.log("Handling other questions");
         // For other questions, you can add similar validation checks
         // ...
@@ -454,6 +457,7 @@ else if (questions[currentQuestion].includes("age?")) {
 
         displayQuestions(); // Move displayQuestions here
     }
+
 
     if (currentQuestion === questions.length) {
         alert('Your Details have been stored');

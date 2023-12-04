@@ -3,7 +3,7 @@ import sqlite3
 admin_data_bp = Blueprint('admin_data_bp',__name__, template_folder='templates')
 
 DB_NAME = 'details2.db'
-TABLE_NAME = 'details3'
+TABLE_NAME = 'details4'
 @admin_data_bp.route('/admin_data',methods = ['GET','POST'])
 def admin_data():
     if request.method == 'GET':
